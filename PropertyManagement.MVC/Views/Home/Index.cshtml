@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-section {
+        padding: 60px 0;
+    }
+
+    .glass-portal {
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+        .glass-portal:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+    .icon-box {
+        width: 80px;
+        height: 80px;
+        background: #0d6efd;
+        color: white;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: -40px auto 20px;
+        box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+    }
+
+    .btn-portal {
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s;
+    }
+
+    .main-title {
+        font-weight: 800;
+        color: #212529;
+        letter-spacing: -1px;
+    }
+
+    .sub-title {
+        color: #6c757d;
+        font-weight: 400;
+    }
+</style>
+
+<div class="container hero-section">
+    <div class="text-center mb-5">
+        <h1 class="display-3 main-title">PropertyHub</h1>
+        <p class="lead sub-title">Smart leasing and maintenance at your fingertips.</p>
+    </div>
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card glass-portal p-4">
+                <div class="icon-box">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <div class="card-body text-center">
+                    <h3 class="fw-bold mb-3">Resident Services</h3>
+                    <p class="text-muted mb-4 px-md-4">
+                        Already have an active maintenance request? Check live updates,
+                        assigned staff, and completion status instantly.
+                    </p>
+
+                    <div class="d-grid">
+                        <a asp-controller="PublicLookup" asp-action="Index" class="btn btn-primary btn-portal shadow-sm">
+                            Track My Request <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
