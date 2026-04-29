@@ -1,0 +1,89 @@
+@model IEnumerable<PropertyManagement.MVC.Models.BuildingViewModel>
+@{ ViewData["Title"] = "Buildings"; }
+
+<div class="page-wrap" style="padding-top:2rem">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Buildings</div>
+      @if (Model.Any())
+      {
+        var totalUnits    = Model.Sum(b => b.TotalUnits);
+        var totalOccupied = Model.Sum(b => b.OccupiedUnits);
+        var totalFree     = Model.Sum(b => b.AvailableUnits);
+        <div class="ph-sub">@Model.Count() @(Model.Count() == 1 ? "building" : "buildings") &nbsp;·&nbsp; @totalUnits units total &nbsp;·&nbsp; @totalFree available</div>
+      }
+      else
+      {
+        <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li><li class="breadcrumb-item active">Buildings</li></ol>
+      }
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus"></i> Add building</a>
+  </div>
+
+  @if (!Model.Any())
+  {
+    <div class="card">
+      <div class="empty-state">
+        <i class="bi bi-building empty-icon"></i>
+        <div class="empty-title">No buildings yet</div>
+        <div class="empty-sub">Add your first building to start managing units and leases.</div>
+        <a asp-action="Create" class="btn btn-primary btn-sm mt-3">Add building</a>
+      </div>
+    </div>
+  }
+  else
+  {
+    <div class="row g-3">
+      @foreach (var b in Model)
+      {
+        var pct      = b.TotalUnits > 0 ? (int)Math.Round((double)b.OccupiedUnits / b.TotalUnits * 100) : 0;
+        var barColor = pct >= 80 ? "#16a34a" : pct >= 50 ? "var(--brand)" : "#d97706";
+        <div class="col-md-4">
+          <div class="card p-4 h-100">
+
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.1rem">
+              <div style="min-width:0;flex:1">
+                <a asp-action="Details" asp-route-id="@b.BuildingId"
+                   style="font-size:.9375rem;font-weight:600;color:var(--text);text-decoration:none;display:block;margin-bottom:.25rem;
+                          white-space:nowrap;overflow:hidden;text-overflow:ellipsis">@b.Name</a>
+                <div style="font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  @b.Address@(!string.IsNullOrEmpty(b.Location) ? $" · {b.Location}" : "")
+                </div>
+              </div>
+              <div style="display:flex;gap:4px;flex-shrink:0;margin-left:.75rem">
+                <a asp-action="Edit"   asp-route-id="@b.BuildingId" class="tbl-link tbl-link-edit"   title="Edit"><i class="bi bi-pencil"></i></a>
+                <a asp-action="Delete" asp-route-id="@b.BuildingId" class="tbl-link tbl-link-danger" title="Delete"><i class="bi bi-trash"></i></a>
+              </div>
+            </div>
+
+            <div style="margin-bottom:1.25rem">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem">
+                <span style="font-size:.74rem;color:var(--muted)">Occupancy</span>
+                <span style="font-size:.78rem;font-weight:500;color:var(--text)">@pct%</span>
+              </div>
+              <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden">
+                <div style="height:100%;width:@pct%;background:@barColor;border-radius:2px;transition:width .4s ease"></div>
+              </div>
+            </div>
+
+            <div style="display:flex;border-top:1px solid var(--border);padding-top:1rem;gap:0">
+              <div style="flex:1">
+                <div style="font-size:1.05rem;font-weight:600;color:var(--text)">@b.TotalUnits</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:2px">Total</div>
+              </div>
+              <div style="flex:1;text-align:center">
+                <div style="font-size:1.05rem;font-weight:600;color:@(b.AvailableUnits > 0 ? "#059669" : "var(--muted)")">@b.AvailableUnits</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:2px">Free</div>
+              </div>
+              <div style="flex:1;text-align:right">
+                <div style="font-size:1.05rem;font-weight:600;color:var(--text2)">@b.OccupiedUnits</div>
+                <div style="font-size:.72rem;color:var(--muted);margin-top:2px">Occupied</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

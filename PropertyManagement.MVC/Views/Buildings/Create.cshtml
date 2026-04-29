@@ -1,0 +1,38 @@
+@model PropertyManagement.MVC.Models.BuildingViewModel
+@{ ViewData["Title"] = "Add Building"; }
+<div class="page-wrap" style="padding-top:2rem;max-width:600px">
+  <div class="ph">
+    <div><div class="ph-title">Add Building</div>
+    <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li><li class="breadcrumb-item"><a asp-action="Index">Buildings</a></li><li class="breadcrumb-item active">New</li></ol></div>
+  </div>
+  <div class="form-card">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+    }
+    <form asp-action="Create" method="post">
+      @Html.AntiForgeryToken()
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <label asp-for="Name" class="form-label">Building Name <span style="color:var(--red)">*</span></label>
+          <input asp-for="Name" class="form-control" placeholder="e.g. Sunset Tower" />
+          <span asp-validation-for="Name" class="text-danger" style="font-size:.76rem"></span>
+        </div>
+        <div class="col-12">
+          <label asp-for="Address" class="form-label">Address <span style="color:var(--red)">*</span></label>
+          <input asp-for="Address" class="form-control" placeholder="Full street address" />
+          <span asp-validation-for="Address" class="text-danger" style="font-size:.76rem"></span>
+        </div>
+        <div class="col-12">
+          <label asp-for="Location" class="form-label">Area / District</label>
+          <input asp-for="Location" class="form-control" placeholder="e.g. Seef, Manama, Juffair..." />
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-building"></i> Add Building</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }
