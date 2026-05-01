@@ -1,0 +1,37 @@
+@model PropertyManagement.MVC.Models.BuildingViewModel
+@{ ViewData["Title"] = "Delete Building"; }
+<div class="page-wrap" style="padding-top:2rem;max-width:520px">
+  <div class="ph">
+    <div><div class="ph-title">Delete Building</div>
+    <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-action="Index">Buildings</a></li><li class="breadcrumb-item active">Delete</li></ol></div>
+  </div>
+  <div class="card p-4">
+    <div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.5rem">
+      <div style="width:48px;height:48px;background:#fee2e2;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--red);flex-shrink:0">
+        <i class="bi bi-trash"></i>
+      </div>
+      <div>
+        <div class="fw-700" style="font-size:1rem;margin-bottom:.25rem">Delete "@Model.Name"?</div>
+        <div style="font-size:.84rem;color:var(--muted)">This action cannot be undone. Buildings with units cannot be deleted.</div>
+      </div>
+    </div>
+    <div style="background:var(--surface);border-radius:10px;padding:1rem;margin-bottom:1.5rem;font-size:.84rem">
+      <div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">Address</span><span class="fw-600">@Model.Address</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">Total units</span><span class="fw-600">@Model.TotalUnits</span></div>
+      @if (Model.TotalUnits > 0)
+      {
+        <div style="margin-top:.5rem"><span class="badge s-overdue"><i class="bi bi-exclamation-triangle"></i> Cannot delete: building has @Model.TotalUnits unit(s)</span></div>
+      }
+    </div>
+    <div style="display:flex;gap:10px">
+      @if (Model.TotalUnits == 0)
+      {
+        <form asp-action="Delete" asp-route-id="@Model.BuildingId" method="post" style="display:inline">
+          @Html.AntiForgeryToken()
+          <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Confirm Delete</button>
+        </form>
+      }
+      <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+  </div>
+</div>
