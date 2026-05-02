@@ -1,0 +1,24 @@
+﻿@model PropertyManagement.MVC.Models.BuildingViewModel
+
+<div class="container mt-4">
+    <h2>Building Details</h2>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Name</dt>
+        <dd class="col-sm-9">@Model.Name</dd>
+
+        <dt class="col-sm-3">Address</dt>
+        <dd class="col-sm-9">@Model.Address</dd>
+
+        <dt class="col-sm-3">Location</dt>
+        <dd class="col-sm-9">@Model.Location</dd>
+
+        <dt class="col-sm-3">Total Units</dt>
+        <dd class="col-sm-9">@Model.TotalUnits</dd>
+    </dl>
+
+    <div class="mt-4">
+        <a asp-action="Edit" asp-route-id="@Model.BuildingId" class="text-dark text-decoration-none">Edit</a> |
+        <a asp-action="Index" class="text-dark text-decoration-none">Back to List</a>
+    </div>
+</div>

@@ -1,0 +1,98 @@
+﻿@model IEnumerable<PropertyManagement.MVC.Models.PaymentViewModel>
+
+@{
+    ViewData["Title"] = "Payments";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Payments</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active">Payments</li>
+                </ol>
+            </nav>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> New Due
+        </a>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="btn-group shadow-sm" role="group">
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary @(string.IsNullOrEmpty(ViewBag.Status) ? "active" : "")">All</a>
+
+                <a asp-action="Index" asp-route-status="Pending"
+                   class="btn btn-outline-secondary @(ViewBag.Status == "Pending" ? "active" : "")">Pending</a>
+
+                <a asp-action="Index" asp-route-status="Overdue"
+                   class="btn btn-outline-secondary @(ViewBag.Status == "Overdue" ? "active" : "")">Overdue</a>
+
+                <a asp-action="Index" asp-route-status="Paid"
+                   class="btn btn-outline-secondary @(ViewBag.Status == "Paid" ? "active" : "")">Paid</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-3">Due Date</th>
+                        <th>Unit</th>
+                        <th>Tenant</th>
+                        <th>Amount Due</th>
+                        <th>Status</th>
+                        <th class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No payment records found.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-3">@item.DueDate.ToShortDateString()</td>
+                                <td><span class="fw-bold">@item.UnitNumber</span></td>
+                                <td>@item.TenantEmail</td>
+                                <td>@item.AmountDue.ToString("C")</td>
+                                <td>
+                                    @if (item.Status == "Paid")
+                                    {
+                                        <span class="badge bg-success">Paid</span>
+                                    }
+                                    else if (item.Status == "Overdue")
+                                    {
+                                        <span class="badge bg-danger">Overdue</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.Status</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@item.PaymentId" class="btn btn-outline-dark">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+﻿@model PropertyManagement.MVC.Models.PaymentViewModel
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h3>Payment Detail #@Model.PaymentId</h3>
+        <span class="badge border border-dark text-dark px-3 py-2">@Model.Status</span>
+    </div>
+    <hr />
+
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <p><strong>Tenant:</strong> @Model.TenantEmail</p>
+            <p><strong>Unit:</strong> @Model.UnitNumber</p>
+            <p><strong>Due Date:</strong> @Model.DueDate.ToShortDateString()</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Amount Due:</strong> @Model.AmountDue.ToString("C")</p>
+            <p><strong>Amount Paid:</strong> @Model.AmountPaid.ToString("C")</p>
+            <p><strong>Payment Date:</strong> @(Model.PaymentDate?.ToShortDateString() ?? "N/A")</p>
+        </div>
+    </div>
+
+    @if (Model.Status != "Paid")
+    {
+        <div class="border p-4 mb-4">
+            <h5 class="mb-3">Record Receipt</h5>
+            <form asp-action="Record" method="post" class="row g-3">
+                <input type="hidden" name="id" value="@Model.PaymentId" />
+                <div class="col-md-4">
+                    <label class="form-label">Amount Paid</label>
+                    <input type="number" step="0.01" name="amountPaid" class="form-control border-dark-subtle" value="@Model.AmountDue" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Method</label>
+                    <select name="method" class="form-select border-dark-subtle">
+                        <option>Bank Transfer</option>
+                        <option>Cash</option>
+                        <option>Check</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Receipt #</label>
+                    <input type="text" name="receipt" class="form-control border-dark-subtle" />
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-outline-dark">Record Payment</button>
+                </div>
+            </form>
+        </div>
+    }
+
+    <a asp-action="Index" class="text-dark text-decoration-none">Back to List</a>
+</div>

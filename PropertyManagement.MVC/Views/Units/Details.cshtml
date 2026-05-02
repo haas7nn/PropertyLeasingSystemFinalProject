@@ -1,0 +1,40 @@
+﻿@model PropertyManagement.MVC.Models.UnitViewModel
+
+<div class="container mt-4">
+    <h3>Unit Details: @Model.UnitNumber</h3>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">Building</dt>
+                <dd class="col-sm-8">@Model.BuildingName</dd>
+
+                <dt class="col-sm-4">Type</dt>
+                <dd class="col-sm-8">@Model.Type</dd>
+
+                <dt class="col-sm-4">Rent</dt>
+                <dd class="col-sm-8">@Model.MonthlyRent.ToString("C")</dd>
+
+                <dt class="col-sm-4">Status</dt>
+                <dd class="col-sm-8">@Model.AvailabilityStatus</dd>
+            </dl>
+        </div>
+        <div class="col-md-6 border-start">
+            <dl class="row">
+                <dt class="col-sm-4">Bedrooms</dt>
+                <dd class="col-sm-8">@Model.Bedrooms</dd>
+
+                <dt class="col-sm-4">Bathrooms</dt>
+                <dd class="col-sm-8">@Model.Bathrooms</dd>
+
+                <dt class="col-sm-4">Size</dt>
+                <dd class="col-sm-8">@Model.SizeInSqFt sqft</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-4 pt-3 border-top d-flex gap-3">
+        <a asp-action="Edit" asp-route-id="@Model.UnitId" class="text-dark text-decoration-none">Edit</a>
+        <a asp-action="Index" class="text-dark text-decoration-none">Back to List</a>
+    </div>
+</div>

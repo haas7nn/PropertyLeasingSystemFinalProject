@@ -1,0 +1,61 @@
+﻿@model PropertyManagement.MVC.Models.LeaseViewModel
+
+<div class="container mt-4">
+    <h2>Edit Lease</h2>
+    <hr />
+    <form asp-action="Edit">
+        <input type="hidden" asp-for="LeaseId" />
+        <input type="hidden" asp-for="UnitId" />
+        <input type="hidden" asp-for="TenantId" />
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label">Status</label>
+                    <select asp-for="Status" class="form-select border-dark-subtle">
+                        <option value="Application">Application</option>
+                        <option value="Active">Active</option>
+                        <option value="Terminated">Terminated</option>
+                        <option value="Expired">Expired</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="StartDate" class="form-label">Start Date</label>
+                    <input asp-for="StartDate" class="form-control border-dark-subtle" type="date" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="EndDate" class="form-label">End Date</label>
+                    <input asp-for="EndDate" class="form-control border-dark-subtle" type="date" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="MonthlyRent" class="form-label">Monthly Rent</label>
+                    <input asp-for="MonthlyRent" class="form-control border-dark-subtle" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="SecurityDeposit" class="form-label">Security Deposit</label>
+                    <input asp-for="SecurityDeposit" class="form-control border-dark-subtle" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="RejectionReason" class="form-label">Rejection Reason</label>
+                    <input asp-for="RejectionReason" class="form-control border-dark-subtle" placeholder="If applicable" />
+                </div>
+            </div>
+            <div class="col-12 mb-4">
+                <label asp-for="ScreeningNotes" class="form-label">Screening Notes</label>
+                <textarea asp-for="ScreeningNotes" class="form-control border-dark-subtle" rows="3"></textarea>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 align-items-center">
+            <button type="submit" class="btn btn-outline-dark">Save Changes</button>
+            <a asp-action="Index" class="text-dark text-decoration-none">Cancel</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,61 @@
+﻿@model PropertyManagement.MVC.Models.UnitViewModel
+
+<div class="container mt-4">
+    <h2>Create Unit</h2>
+    <hr />
+    <form asp-action="Create" method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Building</label>
+                    <select asp-for="BuildingId" class="form-select border-dark-subtle">
+                        <option value="">-- Select Building --</option>
+                        @foreach (var b in ViewBag.Buildings)
+                        {
+                            <option value="@b.BuildingId">@b.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="UnitNumber" class="form-label">Unit Number</label>
+                    <input asp-for="UnitNumber" class="form-control border-dark-subtle" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Type" class="form-label">Type</label>
+                    <input asp-for="Type" class="form-control border-dark-subtle" placeholder="e.g. Apartment, Studio" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="MonthlyRent" class="form-label">Monthly Rent</label>
+                    <input asp-for="MonthlyRent" class="form-control border-dark-subtle" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="Bedrooms" class="form-label">Bedrooms</label>
+                    <input asp-for="Bedrooms" type="number" class="form-control border-dark-subtle" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Bathrooms" class="form-label">Bathrooms</label>
+                    <input asp-for="Bathrooms" type="number" class="form-control border-dark-subtle" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="SizeInSqFt" class="form-label">Size (sqft)</label>
+                    <input asp-for="SizeInSqFt" type="number" class="form-control border-dark-subtle" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Amenities" class="form-label">Amenities</label>
+                    <input asp-for="Amenities" class="form-control border-dark-subtle" placeholder="e.g. Balcony, AC" />
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-3 align-items-center mt-3">
+            <button type="submit" class="btn btn-outline-dark">Create Unit</button>
+            <a asp-action="Index" class="text-dark text-decoration-none">Back</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

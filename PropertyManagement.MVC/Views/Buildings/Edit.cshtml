@@ -1,0 +1,43 @@
+﻿@model PropertyManagement.MVC.Models.BuildingViewModel
+
+<div class="container mt-4">
+    <h2>Edit Building</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="BuildingId" />
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Name</label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label">Address</label>
+                    <input asp-for="Address" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Location" class="form-label">Location</label>
+                    <input asp-for="Location" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TotalUnits" class="form-label">Total Units</label>
+                    <input asp-for="TotalUnits" class="form-control" />
+                </div>
+
+                <div class="d-flex gap-3 align-items-center">
+                    <button type="submit" class="btn btn-outline-dark">Save Changes</button>
+                    <a asp-action="Index" class="text-dark text-decoration-none">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

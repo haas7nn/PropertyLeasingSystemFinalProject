@@ -1,0 +1,20 @@
+﻿@model PropertyManagement.MVC.Models.UnitViewModel
+
+<div class="container mt-4">
+    <h2 class="text-dark">Delete Unit</h2>
+    <p>Are you sure you want to delete this unit?</p>
+    <hr />
+
+    <div class="mb-4">
+        <h5 class="mb-1">Unit @Model.UnitNumber</h5>
+        <p class="text-muted">Building: @Model.BuildingName</p>
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="UnitId" />
+        <div class="d-flex gap-3 align-items-center">
+            <button type="submit" class="btn btn-outline-dark">Confirm Delete</button>
+            <a asp-action="Index" class="text-dark text-decoration-none">Cancel</a>
+        </div>
+    </form>
+</div>

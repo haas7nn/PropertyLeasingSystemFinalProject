@@ -1,0 +1,56 @@
+﻿@model PropertyManagement.MVC.Models.PaymentViewModel
+
+<div class="container mt-4">
+    <h2>Record New Payment Due</h2>
+    <p class="text-muted">Generate a billing entry for a specific lease.</p>
+    <hr />
+
+    <form asp-action="Create" method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="LeaseId" class="form-label">Lease ID</label>
+                    <input asp-for="LeaseId" class="form-control border-dark-subtle" placeholder="Enter valid Lease ID" />
+                    <span asp-validation-for="LeaseId" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DueDate" class="form-label">Due Date</label>
+                    <input asp-for="DueDate" type="date" class="form-control border-dark-subtle" />
+                    <span asp-validation-for="DueDate" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AmountDue" class="form-label">Amount Due</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-dark-subtle">$</span>
+                        <input asp-for="AmountDue" type="number" step="0.01" class="form-control border-dark-subtle" />
+                    </div>
+                    <span asp-validation-for="AmountDue" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="p-3 border rounded border-dark-subtle bg-light shadow-sm">
+                    <h6>Quick Note</h6>
+                    <small class="text-muted">
+                        This action will create a <strong>"Pending"</strong> payment entry.
+                        Once the tenant pays, you can record the receipt and transaction number
+                        via the <strong>Details</strong> page.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 align-items-center mt-4 pt-3 border-top">
+            <button type="submit" class="btn btn-outline-dark px-4">Create Billing</button>
+            <a asp-action="Index" class="text-dark text-decoration-none">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

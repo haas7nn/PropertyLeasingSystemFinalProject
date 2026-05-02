@@ -1,0 +1,61 @@
+﻿@model IEnumerable<PropertyManagement.MVC.Models.LeaseViewModel>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0">Leases</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item active">Leases</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> New Lease
+    </a>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-secondary">@TempData["Error"]</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Unit</th>
+            <th>Tenant</th>
+            <th>Rent</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="align-middle">@item.BuildingName - @item.UnitNumber</td>
+                <td class="align-middle">@item.TenantEmail</td>
+                <td class="align-middle">@item.MonthlyRent.ToString("C")</td>
+                <td class="align-middle">
+                    @item.Status
+                </td>
+                <td class="align-middle text-end">
+                    <div class="d-inline-flex gap-3">
+                        <a asp-action="Details" asp-route-id="@item.LeaseId" class="text-dark text-decoration-none">Details</a>
+
+                        <a asp-action="Edit" asp-route-id="@item.LeaseId" class="text-dark text-decoration-none">Edit</a>
+
+                        @if (item.Status == "Application")
+                        {
+                            <form asp-action="Approve" asp-route-id="@item.LeaseId" method="post" style="display:inline">
+                                <button type="submit" class="border-0 bg-transparent p-0 text-dark text-decoration-none">Approve</button>
+                            </form>
+                        }
+
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

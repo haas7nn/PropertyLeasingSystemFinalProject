@@ -1,0 +1,51 @@
+﻿@model PropertyManagement.MVC.Models.LeaseViewModel
+
+<div class="container mt-4">
+    <h2>Create Lease Application</h2>
+    <hr />
+    <form asp-action="Create">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="UnitId" class="form-label">Unit ID</label>
+                    <input asp-for="UnitId" class="form-control border-dark-subtle" placeholder="Enter Unit ID" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="TenantId" class="form-label">Tenant ID</label>
+                    <input asp-for="TenantId" class="form-control border-dark-subtle" placeholder="Enter Tenant ID" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="StartDate" class="form-label">Start Date</label>
+                    <input asp-for="StartDate" class="form-control border-dark-subtle" type="date" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="EndDate" class="form-label">End Date</label>
+                    <input asp-for="EndDate" class="form-control border-dark-subtle" type="date" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="MonthlyRent" class="form-label">Monthly Rent</label>
+                    <input asp-for="MonthlyRent" class="form-control border-dark-subtle" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="SecurityDeposit" class="form-label">Security Deposit</label>
+                    <input asp-for="SecurityDeposit" class="form-control border-dark-subtle" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="ScreeningNotes" class="form-label">Screening Notes</label>
+                    <textarea asp-for="ScreeningNotes" class="form-control border-dark-subtle" rows="5"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-3 align-items-center mt-3">
+            <button type="submit" class="btn btn-outline-dark">Submit Application</button>
+            <a asp-action="Index" class="text-dark text-decoration-none">Back</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<PropertyManagement.MVC.Models.UnitViewModel>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0">Units</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item active">Units</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> New Unit
+    </a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Building</th>
+            <th>Unit Number</th>
+            <th>Type</th>
+            <th>Rent</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="align-middle">@item.BuildingName</td>
+                <td class="align-middle">@item.UnitNumber</td>
+                <td class="align-middle">@item.Type</td>
+                <td class="align-middle">@item.MonthlyRent.ToString("C")</td>
+                <td class="align-middle">@item.AvailabilityStatus</td>
+                <td class="align-middle text-end">
+                    <div class="d-inline-flex gap-3">
+                        <a asp-action="Details" asp-route-id="@item.UnitId" class="text-dark text-decoration-none">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.UnitId" class="text-dark text-decoration-none">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.UnitId" class="text-dark text-decoration-none">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
