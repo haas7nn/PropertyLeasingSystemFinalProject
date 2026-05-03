@@ -1,0 +1,114 @@
+@model IEnumerable<PropertyManagement.MVC.Models.StaffViewModel>
+@{ ViewData["Title"] = "Maintenance Staff"; }
+
+<div class="page-wrap" style="padding-top:2rem">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Maintenance Staff</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Staff</li>
+      </ol>
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Add Staff Member</a>
+  </div>
+
+  @if (TempData["Success"] != null)
+  {
+    <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  }
+  @if (TempData["Error"] != null)
+  {
+    <div class="alert alert-danger alert-dismissible fade show"><i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  }
+
+  <div class="dtable">
+    <table>
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Skills</th>
+          <th>Availability</th>
+          <th style="text-align:center">Active Requests</th>
+          <th style="text-align:right;padding-right:1.4rem">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!Model.Any())
+        {
+          <tr><td colspan="6">
+            <div class="empty-state">
+              <div class="empty-icon" style="background:var(--brand-bg);color:var(--brand)"><i class="bi bi-people fs-3"></i></div>
+              <div class="empty-title">No staff members yet</div>
+              <div class="empty-sub">Add maintenance staff to start assigning requests.</div>
+              <a asp-action="Create" class="btn btn-primary btn-sm mt-2"><i class="bi bi-plus-circle me-1"></i>Add Staff Member</a>
+            </div>
+          </td></tr>
+        }
+        @foreach (var s in Model)
+        {
+          var avBg = s.AvailabilityStatus == "Available" ? "#f0fdf4" : s.AvailabilityStatus == "Busy" ? "#fef3c7" : "#f1f5f9";
+          var avColor = s.AvailabilityStatus == "Available" ? "#16a34a" : s.AvailabilityStatus == "Busy" ? "#d97706" : "#64748b";
+
+          // Parse skill JSON for display
+          var skillDisplay = string.Empty;
+          if (!string.IsNullOrWhiteSpace(s.Skills) && s.Skills != "[]")
+          {
+            try
+            {
+              var parsed = System.Text.Json.JsonSerializer.Deserialize<List<string>>(s.Skills);
+              skillDisplay = parsed != null ? string.Join(", ", parsed) : s.Skills;
+            }
+            catch { skillDisplay = s.Skills; }
+          }
+
+          <tr>
+            <td>
+              <div style="font-weight:600;font-size:.88rem">@s.Email</div>
+              <div style="font-size:.73rem;color:var(--muted)">ID: @s.Id[..8]…</div>
+            </td>
+            <td style="font-size:.85rem">@(s.PhoneNumber ?? "")</td>
+            <td>
+              @if (!string.IsNullOrEmpty(skillDisplay))
+              {
+                foreach (var skill in skillDisplay.Split(',', StringSplitOptions.TrimEntries))
+                {
+                  <span style="display:inline-block;background:var(--brand-bg);color:var(--brand);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:20px;margin:1px">@skill.Trim()</span>
+                }
+              }
+              else
+              {
+                <span style="color:var(--muted);font-size:.82rem">None listed</span>
+              }
+            </td>
+            <td>
+              <span style="display:inline-block;background:@avBg;color:@avColor;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:99px">@s.AvailabilityStatus</span>
+            </td>
+            <td style="text-align:center;font-weight:700;color:@(s.ActiveRequests > 0 ? "var(--brand)" : "var(--muted)")">@s.ActiveRequests</td>
+            <td style="text-align:right;padding-right:1.2rem">
+              <div style="display:flex;gap:6px;justify-content:flex-end">
+                <a asp-action="Details" asp-route-id="@s.Id" class="btn btn-sm" style="background:var(--surface);border:1px solid var(--border);font-size:.75rem">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a asp-action="Edit" asp-route-id="@s.Id" class="btn btn-sm" style="background:var(--surface);border:1px solid var(--border);font-size:.75rem">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                @if (s.ActiveRequests == 0)
+                {
+                  <form asp-action="Delete" method="post" onsubmit="return confirm('Remove this staff member?')">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@s.Id" />
+                    <button type="submit" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:1px solid #fecaca;font-size:.75rem">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
