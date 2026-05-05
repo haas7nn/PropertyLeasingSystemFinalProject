@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PropertyManagement.API/PropertyManagement.API.csproj" />
+  <Project Path="PropertyManagement.MVC/PropertyManagement.MVC.csproj" Id="022fe2e0-62c9-46be-aee6-7a577b7bf86a" />
+</Solution>

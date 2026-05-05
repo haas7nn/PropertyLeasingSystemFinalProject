@@ -59,25 +59,21 @@ namespace PropertyManagement.API.Controllers
         {
             try
             {
-                // Test Building → Units
                 var building = await _context.Buildings
                     .Include(b => b.Units)
                     .FirstOrDefaultAsync();
 
-                // Test Unit → Lease
                 var unit = await _context.Units
                     .Include(u => u.LeaseHistory)
                     .Include(u => u.CurrentLease)
                     .FirstOrDefaultAsync();
 
-                // Test Lease → Tenant
                 var lease = await _context.Leases
                     .Include(l => l.Tenant)
                     .Include(l => l.Unit)
                     .Include(l => l.Payments)
                     .FirstOrDefaultAsync();
 
-                // Test Maintenance Request → Tenant, Unit, Staff
                 var maintenance = await _context.MaintenanceRequests
                     .Include(m => m.Tenant)
                     .Include(m => m.Unit)
@@ -111,7 +107,21 @@ namespace PropertyManagement.API.Controllers
             try
             {
                 var buildings = await _context.Buildings
-                    .Include(b => b.Units)
+                    .Select(b => new
+                    {
+                        b.BuildingId,
+                        b.Name,
+                        b.Location,
+                        b.Address,
+                        Units = b.Units.Select(u => new
+                        {
+                            u.UnitId,
+                            u.UnitNumber,
+                            u.Type,
+                            u.MonthlyRent,
+                            u.AvailabilityStatus
+                        }).ToList()
+                    })
                     .ToListAsync();
 
                 var tenants = await _context.Users.OfType<Tenant>()
@@ -133,11 +143,30 @@ namespace PropertyManagement.API.Controllers
                     })
                     .ToListAsync();
 
+                var maintenanceRequests = await _context.MaintenanceRequests
+                    .Select(m => new
+                    {
+                        m.RequestId,
+                        m.TicketNumber,
+                        m.Category,
+                        m.Priority,
+                        m.Status,
+                        m.Description,
+                        m.SubmittedDate,
+                        TenantEmail = m.Tenant.Email,
+                        TenantPhone = m.Tenant.PhoneNumber,
+                        Building = m.Unit.Building.Name,
+                        Unit = m.Unit.UnitNumber,
+                        AssignedStaff = m.AssignedStaff != null ? m.AssignedStaff.Email : null
+                    })
+                    .ToListAsync();
+
                 return Ok(new
                 {
                     buildings,
                     tenants,
-                    maintenanceStaff = staff
+                    maintenanceStaff = staff,
+                    maintenanceRequests
                 });
             }
             catch (Exception ex)

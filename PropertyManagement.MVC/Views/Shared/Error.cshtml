@@ -1,0 +1,114 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "System Error";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .error-container {
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .error-card {
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .error-header {
+        background: #dc3545; /* Soft red for errors */
+        padding: 40px;
+        text-align: center;
+        color: white;
+    }
+
+        .error-header i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+    .error-body {
+        padding: 40px;
+    }
+
+    .request-id-box {
+        background: #f8f9fa;
+        border: 1px dashed #dee2e6;
+        border-radius: 12px;
+        padding: 15px;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    .dev-mode-alert {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 25px;
+        font-size: 0.9rem;
+    }
+
+    .btn-home {
+        background: #212529;
+        color: white;
+        border-radius: 10px;
+        padding: 12px 25px;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+        .btn-home:hover {
+            background: #000;
+            color: white;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="container py-5">
+    <div class="error-container text-center">
+        <div class="card error-card">
+            <div class="error-header">
+                <i class="bi bi-exclamation-octagon-fill"></i>
+                <h1 class="fw-bold mb-0">Oops!</h1>
+                <p class="opacity-75 mb-0 mt-2">Something went wrong on our end.</p>
+            </div>
+
+            <div class="error-body">
+                <h5 class="text-dark mb-4">An error occurred while processing your request.</h5>
+
+                @if (Model.ShowRequestId)
+                {
+                    <div class="request-id-box mb-4">
+                        <span class="text-muted small d-block mb-1">REFERENCE ID</span>
+                        <code class="text-danger fw-bold">@Model.RequestId</code>
+                    </div>
+                }
+
+                <div class="d-grid gap-2">
+                    <a href="/" class="btn-home">
+                        <i class="bi bi-house-door me-2"></i> Return to Homepage
+                    </a>
+                </div>
+
+                <div class="dev-mode-alert text-start mt-4">
+                    <h6 class="fw-bold"><i class="bi bi-code-slash me-2"></i>Developer Insight</h6>
+                    <p class="mb-0 small text-dark">
+                        Swapping to <strong>Development</strong> environment will display more detailed information about the error.
+                        Enable this by setting <strong>ASPNETCORE_ENVIRONMENT</strong> to <strong>Development</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

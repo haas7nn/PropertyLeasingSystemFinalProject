@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Track Maintenance Request";
+}
+
+<div class="page-header text-center">
+    <div class="container">
+        <h1 class="display-5 fw-bold mb-3">
+            <i class="bi bi-search"></i> Track Your Request
+        </h1>
+        <p class="lead mb-0">Enter your details to view maintenance request status</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body p-4">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <strong>Error:</strong> @ViewBag.Error
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div class="text-center mb-4">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             style="width: 80px; height: 80px;">
+                            <i class="bi bi-ticket-perforated text-primary" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold">Lookup Your Request</h4>
+                        <p class="text-muted">
+                            Please provide your ticket number and registered phone number
+                        </p>
+                    </div>
+
+                    <form method="post" asp-action="Search">
+                        <div class="mb-4">
+                            <label for="ticketNumber" class="form-label fw-semibold">
+                                <i class="bi bi-ticket-detailed text-primary"></i> Ticket Number
+                            </label>
+                            <input type="text"
+                                   class="form-control form-control-lg"
+                                   id="ticketNumber"
+                                   name="ticketNumber"
+                                   placeholder="MNT-123456"
+                                   required
+                                   autofocus />
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> Format: MNT-XXXXXX (provided when request was submitted)
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="phoneNumber" class="form-label fw-semibold">
+                                <i class="bi bi-telephone text-primary"></i> Registered Phone Number
+                            </label>
+                            <input type="tel"
+                                   class="form-control form-control-lg"
+                                   id="phoneNumber"
+                                   name="phoneNumber"
+                                   placeholder="39999111"
+                                   required />
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i> The phone number you used when submitting the request
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-search"></i> Track Request
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4" />
+
+                    <div class="alert alert-info mb-0">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-info-circle-fill me-3 mt-1" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="alert-heading fw-bold mb-2">Need Help?</h6>
+                                <p class="mb-1 small">
+                                    If you don't have your ticket number, please contact our support team:
+                                </p>
+                                <p class="mb-0 small">
+                                    <i class="bi bi-telephone-fill"></i> <strong>+973 3911 1222</strong><br />
+                                    <i class="bi bi-envelope-fill"></i> <strong>support@propertymanagement.com</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Info -->
+            <div class="row g-3 mt-3">
+                <div class="col-6">
+                    <div class="card bg-light border-0 text-center p-3">
+                        <i class="bi bi-clock-history text-primary mb-2" style="font-size: 2rem;"></i>
+                        <small class="text-muted fw-semibold">24/7 Tracking</small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card bg-light border-0 text-center p-3">
+                        <i class="bi bi-shield-check text-success mb-2" style="font-size: 2rem;"></i>
+                        <small class="text-muted fw-semibold">Secure Access</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

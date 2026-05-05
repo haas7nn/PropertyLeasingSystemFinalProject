@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Privacy Policy";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .policy-container {
+        max-width: 800px;
+        margin: 60px auto;
+    }
+
+    .policy-card {
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .policy-header {
+        background: #212529;
+        padding: 40px;
+        text-align: center;
+        color: white;
+    }
+
+        .policy-header i {
+            font-size: 2.5rem;
+            color: #0d6efd;
+            margin-bottom: 10px;
+        }
+
+    .policy-body {
+        padding: 40px;
+        line-height: 1.8;
+        color: #495057;
+    }
+
+    .policy-section-title {
+        color: #212529;
+        font-weight: 700;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+        .policy-section-title i {
+            margin-right: 10px;
+            color: #0d6efd;
+        }
+
+    .last-updated {
+        font-style: italic;
+        font-size: 0.85rem;
+        color: #adb5bd;
+        margin-top: 40px;
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <div class="policy-container">
+        <div class="card policy-card">
+            <div class="policy-header">
+                <i class="bi bi-shield-check"></i>
+                <h1 class="fw-bold mb-0">@ViewData["Title"]</h1>
+                <p class="opacity-75 mb-0 mt-2">Your trust and privacy are our top priorities.</p>
+            </div>
+
+            <div class="policy-body">
+                <p class="lead">
+                    This Privacy Policy describes how we collect, use, and protect your information when you use the Property Management System.
+                </p>
+
+                <h5 class="policy-section-title">
+                    <i class="bi bi-info-circle"></i> Information We Collect
+                </h5>
+                <p>
+                    When you use our maintenance tracking service, we collect specific details like your ticket number and phone number to verify your identity and provide real-time updates on your request status.
+                </p>
+
+                <h5 class="policy-section-title">
+                    <i class="bi bi-lock"></i> How We Protect Your Data
+                </h5>
+                <p>
+                    We implement industry-standard security measures to ensure that your personal information is kept safe from unauthorized access or disclosure. We do not sell or share your information with third parties.
+                </p>
+
+                <h5 class="policy-section-title">
+                    <i class="bi bi-gear"></i> Your Rights
+                </h5>
+                <p>
+                    You have the right to access the data we hold about your maintenance requests at any time. If you believe any information is incorrect, please contact management to have it updated.
+                </p>
+
+                <div class="last-updated">
+                    Last updated: @DateTime.Now.ToString("MMMM dd, yyyy")
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-link text-decoration-none text-muted">
+                <i class="bi bi-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</div>
