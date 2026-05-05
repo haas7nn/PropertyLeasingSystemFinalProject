@@ -1,0 +1,58 @@
+@model IEnumerable<PropertyManagement.MVC.Models.UnitViewModel>
+@{ ViewData["Title"] = "Units"; }
+<div class="page-wrap" style="padding-top:2rem">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Units</div>
+      @if (Model.Any())
+      {
+        var avail = Model.Count(u => u.AvailabilityStatus == "Available");
+        <div class="ph-sub">@Model.Count() units &nbsp;·&nbsp; @avail available</div>
+      }
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus"></i> Add unit</a>
+  </div>
+  <div class="dtable">
+    <table>
+      <thead>
+        <tr><th>Unit #</th><th>Type</th><th>Size</th><th>Rent (BD/mo)</th><th>Status</th><th style="text-align:right;padding-right:1.4rem">Actions</th></tr>
+      </thead>
+      <tbody>
+        @if (!Model.Any())
+        {
+          <tr><td colspan="6">
+            <div class="empty-state">
+              <i class="bi bi-door-closed empty-icon"></i>
+              <div class="empty-title">No units yet</div>
+              <div class="empty-sub">Add units to your buildings to start accepting lease applications.</div>
+              <a asp-action="Create" class="btn btn-primary btn-sm mt-3">Add unit</a>
+            </div>
+          </td></tr>
+        }
+        @foreach (var u in Model)
+        {
+          var sc = u.AvailabilityStatus?.ToLower() switch {"available"=>"s-available","occupied"=>"s-occupied","maintenance"=>"s-partial",_=>"s-pending"};
+          <tr>
+            <td>
+              <div style="font-weight:500;color:var(--text)">@u.UnitNumber</div>
+              @if (!string.IsNullOrEmpty(u.Amenities))
+              {
+                <div style="font-size:.72rem;color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">@u.Amenities</div>
+              }
+            </td>
+            <td style="font-size:.84rem;color:var(--text2)">@u.Type@(u.Bedrooms.HasValue ? $" · {u.Bedrooms} bd" : "")</td>
+            <td style="font-size:.84rem;color:var(--muted)">@(u.SizeInSqFt > 0 ? $"{u.SizeInSqFt} sqft" : "")</td>
+            <td style="font-size:.875rem;font-weight:500;color:var(--text)">@u.MonthlyRent.ToString("N2")</td>
+            <td><span class="badge @sc">@u.AvailabilityStatus</span></td>
+            <td>
+              <div class="tbl-actions">
+                <a asp-action="Edit" asp-route-id="@u.UnitId" class="tbl-link tbl-link-edit"><i class="bi bi-pencil"></i> Edit</a>
+                <a asp-action="Delete" asp-route-id="@u.UnitId" class="tbl-link tbl-link-danger"><i class="bi bi-trash"></i></a>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

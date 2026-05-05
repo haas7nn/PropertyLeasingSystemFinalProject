@@ -1,0 +1,71 @@
+@model PropertyManagement.MVC.Models.UnitViewModel
+@{ ViewData["Title"] = "Add Unit"; }
+<div class="page-wrap" style="padding-top:2rem;max-width:680px">
+  <div class="ph">
+    <div><div class="ph-title">Add Unit</div>
+    <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-action="Index">Units</a></li><li class="breadcrumb-item active">New</li></ol></div>
+  </div>
+  <div class="form-card">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+    }
+    <form asp-action="Create" method="post">
+      @Html.AntiForgeryToken()
+      <div class="form-section">
+        <div class="form-section-title">Building</div>
+        <label asp-for="BuildingId" class="form-label">Building <span style="color:var(--red)">*</span></label>
+        <select asp-for="BuildingId" class="form-select">
+          <option value="">Select a building</option>
+          @foreach (dynamic b in (ViewBag.Buildings ?? new List<object>()))
+          { <option value="@b.BuildingId">@b.Name, @b.Address</option> }
+        </select>
+        <span asp-validation-for="BuildingId" class="text-danger" style="font-size:.76rem"></span>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Unit Info</div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label asp-for="UnitNumber" class="form-label">Unit Number <span style="color:var(--red)">*</span></label>
+            <input asp-for="UnitNumber" class="form-control" placeholder="e.g. 101" />
+            <span asp-validation-for="UnitNumber" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+          <div class="col-md-4">
+            <label asp-for="Type" class="form-label">Type <span style="color:var(--red)">*</span></label>
+            <select asp-for="Type" class="form-select">
+              <option value="">Select</option>
+              <option>Studio</option><option>1 Bedroom</option><option>2 Bedroom</option>
+              <option>3 Bedroom</option><option>Penthouse</option><option>Office</option>
+            </select>
+            <span asp-validation-for="Type" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+          <div class="col-md-4">
+            <label asp-for="Bedrooms" class="form-label">Bedrooms</label>
+            <input asp-for="Bedrooms" type="number" min="0" class="form-control" placeholder="0" />
+          </div>
+          <div class="col-md-6">
+            <label asp-for="SizeInSqFt" class="form-label">Size (sqft)</label>
+            <input asp-for="SizeInSqFt" type="number" step="0.01" class="form-control" placeholder="e.g. 850" />
+          </div>
+          <div class="col-md-6">
+            <label asp-for="MonthlyRent" class="form-label">Monthly Rent (BD) <span style="color:var(--red)">*</span></label>
+            <div style="position:relative">
+              <span style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.82rem;font-weight:600">BD</span>
+              <input asp-for="MonthlyRent" type="number" step="0.01" min="0.01" class="form-control" style="padding-left:2.5rem" />
+            </div>
+            <span asp-validation-for="MonthlyRent" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+          <div class="col-12">
+            <label asp-for="Amenities" class="form-label">Amenities</label>
+            <input asp-for="Amenities" class="form-control" placeholder="e.g. Parking, Pool, Gym, Furnished..." />
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-door-closed"></i> Add Unit</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }
