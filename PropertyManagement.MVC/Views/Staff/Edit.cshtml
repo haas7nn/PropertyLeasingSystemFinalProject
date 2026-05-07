@@ -1,0 +1,62 @@
+@model PropertyManagement.MVC.Models.EditStaffViewModel
+@{ ViewData["Title"] = "Edit Staff"; }
+
+<div class="page-wrap" style="padding-top:2rem;max-width:560px">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Edit Staff Profile</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Staff</a></li>
+        <li class="breadcrumb-item active">Edit</li>
+      </ol>
+    </div>
+  </div>
+
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2rem">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+      @Html.AntiForgeryToken()
+      <input asp-for="Id" type="hidden" />
+      <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+      <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger small"></span>
+      </div>
+
+      <div class="mb-3">
+        <label asp-for="PhoneNumber" class="form-label"></label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+      </div>
+
+      <div class="mb-3">
+        <label asp-for="Skills" class="form-label"></label>
+        <input asp-for="Skills" class="form-control" placeholder="Plumbing, Electrical, HVAC" />
+        <div class="form-text">Comma-separated skill areas.</div>
+        <span asp-validation-for="Skills" class="text-danger small"></span>
+      </div>
+
+      <div class="mb-4">
+        <label asp-for="AvailabilityStatus" class="form-label"></label>
+        <select asp-for="AvailabilityStatus" class="form-select">
+          <option value="Available">Available</option>
+          <option value="Busy">Busy</option>
+          <option value="OnLeave">On Leave</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+        <span asp-validation-for="AvailabilityStatus" class="text-danger small"></span>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Save Changes</button>
+        <a asp-action="Index" class="btn" style="background:var(--surface);border:1px solid var(--border)">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
