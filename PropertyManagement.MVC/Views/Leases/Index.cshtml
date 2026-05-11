@@ -1,0 +1,234 @@
+@model IEnumerable<PropertyManagement.MVC.Models.LeaseViewModel>
+@{ ViewData["Title"] = "Leases"; }
+<style>
+.filter-pill {
+  display:inline-flex;align-items:center;gap:5px;padding:5px 14px;
+  border-radius:20px;font-size:.78rem;font-weight:600;
+  text-decoration:none;transition:all .15s;
+  background:var(--white);color:var(--muted);border:1px solid var(--border);
+}
+.filter-pill:hover { background:var(--surface);color:var(--text); }
+.filter-pill-active {
+  background:var(--brand);color:white !important;
+  border-color:var(--brand);
+}
+</style>
+
+<div class="page-wrap" style="padding-top:2rem">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Leases</div>
+      @if (Model.Any())
+      {
+        var active  = Model.Count(l => l.Status == "Active");
+        var pending = Model.Count(l => l.Status is "Application" or "Screening");
+        <div class="ph-sub">@Model.Count() total &nbsp;·&nbsp; @active active &nbsp;@(pending > 0 ? $"· {pending} pending review" : "")</div>
+      }
+      else
+      {
+        <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li><li class="breadcrumb-item active">Leases</li></ol>
+      }
+    </div>
+    @if (User.IsInRole("PropertyManager"))
+    {
+      <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> New Application</a>
+    }
+    @if (User.IsInRole("Tenant"))
+    {
+      <a asp-action="Browse" class="btn btn-primary"><i class="bi bi-door-open"></i> Browse Available Units</a>
+    }
+  </div>
+
+  <!-- Status filter pills -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem">
+    @{
+      var activeStatus = ViewBag.Status as string ?? "";
+  }
+  @foreach(var s in new[]{("","All"), ("Application","Application"), ("Screening","Screening"), ("Active","Active"), ("Terminated","Terminated"), ("Rejected","Rejected")})
+  {
+      bool isActivePill = (activeStatus == s.Item1);
+      string pillClass = isActivePill ? "filter-pill filter-pill-active" : "filter-pill";
+      <a asp-action="Index" asp-route-status="@s.Item1" class="@pillClass">@s.Item2</a>
+  }
+  </div>
+
+  <div class="dtable">
+    <table>
+      <thead>
+        <tr>
+          <th>Unit</th>
+          <th>Tenant</th>
+          <th>Rent (BD)</th>
+          <th>Period</th>
+          <th>Status</th>
+          @if (User.IsInRole("PropertyManager") || User.IsInRole("Tenant")) { <th style="text-align:right;padding-right:1.4rem">Actions</th> }
+        </tr>
+      </thead>
+      <tbody>
+        @if (!Model.Any())
+        {
+          <tr><td colspan="6">
+            <div class="empty-state">
+              <i class="bi bi-file-earmark-text empty-icon"></i>
+              <div class="empty-title">No leases found</div>
+              <div class="empty-sub">@(User.IsInRole("PropertyManager") ? "Create the first lease application to get started." : "You don't have any lease records yet. Browse available units to apply.")</div>
+              @if (User.IsInRole("PropertyManager"))
+              {
+                <a asp-action="Create" class="btn btn-primary btn-sm mt-2"><i class="bi bi-plus-circle"></i> New Application</a>
+              }
+              @if (User.IsInRole("Tenant"))
+              {
+                <a asp-action="Browse" class="btn btn-primary btn-sm mt-2"><i class="bi bi-door-open"></i> Browse Available Units</a>
+              }
+            </div>
+          </td></tr>
+        }
+        @foreach (var l in Model)
+        {
+          var sc      = l.Status switch {"Active"=>"s-active","Application"=>"s-pending","Screening"=>"s-screening","Rejected"=>"s-rejected","Terminated"=>"s-terminated",_=>"s-pending"};
+          var rowCss  = l.Status is "Application" or "Screening" ? "row-warn" : "";
+          <tr class="@rowCss">
+            <td>
+              <div class="fw-600" style="color:var(--text)">@l.UnitNumber</div>
+              <div style="font-size:.75rem;color:var(--muted)">@l.BuildingName</div>
+            </td>
+            <td style="color:var(--text2);font-size:.84rem">@l.TenantEmail</td>
+            <td class="fw-700" style="font-size:.9rem">@l.MonthlyRent.ToString("N2")</td>
+            <td style="font-size:.78rem;color:var(--muted)">
+              <div>@l.StartDate.ToString("d MMM yy")</div>
+              <div>→ @l.EndDate.ToString("d MMM yy")</div>
+            </td>
+            <td><span class="badge @sc">@l.Status</span></td>
+            @if (User.IsInRole("PropertyManager"))
+            {
+              <td>
+                <div class="tbl-actions">
+                  <a asp-action="Details" asp-route-id="@l.LeaseId" class="tbl-link tbl-link-view"><i class="bi bi-eye"></i></a>
+                  <a asp-action="Edit" asp-route-id="@l.LeaseId" class="tbl-link tbl-link-edit"><i class="bi bi-pencil"></i></a>
+                  @if (l.Status == "Application")
+                  {
+                    <form asp-action="Screen" asp-route-id="@l.LeaseId" method="post" style="display:inline">@Html.AntiForgeryToken()
+                      <button type="submit" class="tbl-btn tbl-btn-screen"><i class="bi bi-search"></i> Screen</button>
+                    </form>
+                    <form asp-action="Approve" asp-route-id="@l.LeaseId" method="post" style="display:inline">@Html.AntiForgeryToken()
+                      <button type="submit" class="tbl-btn tbl-btn-approve"><i class="bi bi-check2"></i> Approve</button>
+                    </form>
+                    <form asp-action="Reject" asp-route-id="@l.LeaseId" method="post" style="display:inline">@Html.AntiForgeryToken()
+                      <input type="hidden" name="reason" value="Application rejected." />
+                      <button type="submit" class="tbl-btn tbl-btn-reject"><i class="bi bi-x"></i> Reject</button>
+                    </form>
+                  }
+                  @if (l.Status == "Screening")
+                  {
+                    <form asp-action="Approve" asp-route-id="@l.LeaseId" method="post" style="display:inline">@Html.AntiForgeryToken()
+                      <button type="submit" class="tbl-btn tbl-btn-approve"><i class="bi bi-check2-circle"></i> Approve</button>
+                    </form>
+                    <form asp-action="Reject" asp-route-id="@l.LeaseId" method="post" style="display:inline">@Html.AntiForgeryToken()
+                      <input type="hidden" name="reason" value="Rejected after screening." />
+                      <button type="submit" class="tbl-btn tbl-btn-reject"><i class="bi bi-x"></i> Reject</button>
+                    </form>
+                  }
+                  @if (l.Status == "Active")
+                  {
+                    <button class="tbl-btn tbl-btn-renew" data-bs-toggle="modal" data-bs-target="#renewModal"
+                      data-id="@l.LeaseId" data-end="@l.EndDate.ToString("yyyy-MM-dd")">
+                      <i class="bi bi-arrow-repeat"></i> Renew
+                    </button>
+                    <button class="tbl-btn tbl-btn-term" data-bs-toggle="modal" data-bs-target="#terminateModal"
+                      data-id="@l.LeaseId" data-unit="@l.UnitNumber">
+                      <i class="bi bi-x-circle"></i> Terminate
+                    </button>
+                  }
+                </div>
+              </td>
+            }
+            @if (User.IsInRole("Tenant"))
+            {
+              <td>
+                <div class="tbl-actions">
+                  <a asp-action="Details" asp-route-id="@l.LeaseId" class="tbl-link tbl-link-view"><i class="bi bi-eye"></i> View</a>
+                </div>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (User.IsInRole("PropertyManager"))
+{
+<!-- Renew Modal -->
+<div class="modal fade" id="renewModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-arrow-repeat me-2 text-primary"></i>Renew Lease</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" asp-action="Renew">
+        @Html.AntiForgeryToken()
+        <div class="modal-body">
+          <input type="hidden" name="id" id="renewLeaseId" />
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1.25rem">Extend the lease end date. The tenant will be notified automatically.</p>
+          <div class="mb-3">
+            <label class="form-label">Current End Date</label>
+            <input type="text" id="renewCurrentEnd" class="form-control" readonly style="background:var(--surface);color:var(--muted)" />
+          </div>
+          <div>
+            <label for="renewNewEndDate" class="form-label">New End Date <span style="color:var(--red)">*</span></label>
+            <input type="date" name="newEndDate" id="renewNewEndDate" class="form-control" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-arrow-repeat"></i> Confirm Renewal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Terminate Modal -->
+<div class="modal fade" id="terminateModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-x-circle me-2" style="color:var(--red)"></i>Terminate Lease</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" asp-action="Terminate">
+        @Html.AntiForgeryToken()
+        <div class="modal-body">
+          <input type="hidden" name="id" id="terminateLeaseId" />
+          <div class="alert alert-warning mb-3"><i class="bi bi-exclamation-triangle-fill"></i> The unit will be marked Available immediately.</div>
+          <div>
+            <label class="form-label">Reason <span style="color:var(--red)">*</span></label>
+            <textarea name="reason" class="form-control" rows="3" placeholder="Provide a reason for termination..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-x-circle"></i> Terminate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('[data-bs-target="#renewModal"]').forEach(b => b.addEventListener('click', () => {
+    document.getElementById('renewLeaseId').value = b.dataset.id;
+    document.getElementById('renewCurrentEnd').value = b.dataset.end;
+    const d = new Date(b.dataset.end); d.setFullYear(d.getFullYear()+1);
+    document.getElementById('renewNewEndDate').value = d.toISOString().split('T')[0];
+    const minDate = new Date(b.dataset.end);
+    minDate.setDate(minDate.getDate() + 1);
+    document.getElementById('renewNewEndDate').min = minDate.toISOString().split('T')[0];
+}));
+document.querySelectorAll('[data-bs-target="#terminateModal"]').forEach(b => b.addEventListener('click', () => {
+    document.getElementById('terminateLeaseId').value = b.dataset.id;
+}));
+</script>
+}
