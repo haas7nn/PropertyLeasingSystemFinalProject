@@ -1,0 +1,48 @@
+@model IEnumerable<PropertyManagement.MVC.Models.MaintenanceRequestViewModel>
+@{ ViewData["Title"] = "My Requests"; }
+
+<div class="page-wrap" style="padding-top:2rem">
+  <div class="ph">
+    <div><div class="ph-title">My Maintenance Requests</div>
+    <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li><li class="breadcrumb-item active">My Requests</li></ol></div>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Submit Request</a>
+  </div>
+
+  <div class="dtable">
+    <table>
+      <thead>
+        <tr><th>Ticket</th><th>Unit</th><th>Category</th><th>Priority</th><th>Submitted</th><th>Status</th><th>Assigned To</th></tr>
+      </thead>
+      <tbody>
+        @if (!Model.Any())
+        {
+          <tr><td colspan="7">
+            <div class="empty-state">
+              <div class="empty-icon" style="background:#fef3c7;color:#d97706"><i class="bi bi-tools fs-3"></i></div>
+              <div class="empty-title">No requests yet</div>
+              <div class="empty-sub">Submit a maintenance request for any issue in your unit.</div>
+              <a asp-action="Create" class="btn btn-primary btn-sm mt-2"><i class="bi bi-plus-circle"></i> Submit Request</a>
+            </div>
+          </td></tr>
+        }
+        @foreach (var r in Model)
+        {
+          var sc = r.Status switch {"Submitted"=>"s-pending","Assigned"=>"s-assigned","InProgress"=>"s-inprogress","Resolved"=>"s-resolved","Closed"=>"s-closed",_=>"s-pending"};
+          var pc = r.Priority switch {"Urgent"=>"#dc2626","High"=>"#d97706","Medium"=>"#2563eb",_=>"#64748b"};
+          <tr>
+            <td><span class="mono fw-700" style="font-size:.8rem;color:var(--brand)">@r.TicketNumber</span></td>
+            <td style="font-size:.84rem;color:var(--text2)">@(r.UnitNumber ?? "")</td>
+            <td style="font-size:.84rem;color:var(--text2)">@r.Category</td>
+            <td><span style="background:@(pc)18;color:@pc;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:20px">@r.Priority</span></td>
+            <td style="font-size:.8rem;color:var(--muted)">@r.SubmittedDate.ToString("d MMM yyyy")</td>
+            <td><span class="badge @sc">@r.Status</span></td>
+            <td style="font-size:.8rem;color:var(--muted)">@(r.AssignedStaffName ?? "Unassigned")</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:.78rem;color:var(--muted);margin-top:.75rem">
+    <i class="bi bi-search me-1"></i> You can also track your ticket without logging in via the <a asp-controller="PublicLookup" asp-action="Index">public lookup</a>.
+  </p>
+</div>
