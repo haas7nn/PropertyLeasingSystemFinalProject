@@ -1,0 +1,71 @@
+@model PropertyManagement.MVC.Models.SubmitMaintenanceViewModel
+@{ ViewData["Title"] = "Submit Request"; }
+
+<div class="page-wrap" style="padding-top:2rem;max-width:640px">
+  <div class="ph">
+    <div><div class="ph-title">Submit Maintenance Request</div>
+    <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li><li class="breadcrumb-item"><a asp-action="Index">My Requests</a></li><li class="breadcrumb-item active">Submit</li></ol></div>
+  </div>
+
+  <div class="form-card">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="alert alert-danger mb-4"></div>
+    }
+    <form asp-action="Create" method="post">
+      @Html.AntiForgeryToken()
+
+      <div class="form-section">
+        <div class="form-section-title">Unit</div>
+        <label asp-for="UnitId" class="form-label">Your Unit <span style="color:var(--red)">*</span></label>
+        <select asp-for="UnitId" class="form-select">
+          <option value="">Select your unit</option>
+          @foreach (dynamic u in (ViewBag.Units ?? new List<object>()))
+          { <option value="@u.UnitId">@u.Display</option> }
+        </select>
+        <span asp-validation-for="UnitId" class="text-danger" style="font-size:.76rem"></span>
+        @if ((ViewBag.Units as System.Collections.IList)?.Count == 0)
+        {
+          <div class="form-text" style="color:var(--red)"><i class="bi bi-exclamation-triangle me-1"></i>No active lease found. Contact your property manager.</div>
+        }
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Request Details</div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label asp-for="Category" class="form-label">Category <span style="color:var(--red)">*</span></label>
+            <select asp-for="Category" class="form-select">
+              <option value="">Select</option>
+              @foreach (var c in (ViewBag.Categories as string[] ?? Array.Empty<string>()))
+              { <option value="@c">@c</option> }
+            </select>
+            <span asp-validation-for="Category" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+          <div class="col-md-6">
+            <label asp-for="Priority" class="form-label">Priority <span style="color:var(--red)">*</span></label>
+            <select asp-for="Priority" class="form-select">
+              <option value="">Select</option>
+              @foreach (var p in (ViewBag.Priorities as string[] ?? Array.Empty<string>()))
+              { <option value="@p">@p</option> }
+            </select>
+            <span asp-validation-for="Priority" class="text-danger" style="font-size:.76rem"></span>
+            <div class="form-text">Use <strong>Urgent</strong> for flooding, power failure, gas leak only.</div>
+          </div>
+          <div class="col-12">
+            <label asp-for="Description" class="form-label">Description <span style="color:var(--red)">*</span></label>
+            <textarea asp-for="Description" class="form-control" rows="5"
+              placeholder="Describe the issue: what happened, when it started, how severe it is."></textarea>
+            <span asp-validation-for="Description" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Submit Request</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }
