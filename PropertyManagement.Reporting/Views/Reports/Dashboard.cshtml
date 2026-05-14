@@ -1,0 +1,101 @@
+@model PropertyManagement.Reporting.Models.DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; ViewData["ActivePage"] = "Dashboard"; }
+
+@if (!Model.ApiConnected)
+{
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center">
+    <div style="width:64px;height:64px;background:#fef2f2;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#dc2626;margin-bottom:1rem">
+      <i class="bi bi-wifi-off"></i>
+    </div>
+    <h2 style="font-size:1.2rem;font-weight:800;color:#0f172a;margin-bottom:.5rem">Connection Error</h2>
+    <p style="color:var(--muted);font-size:.88rem;max-width:380px">
+      Unable to reach the data service. Please check your connection and try again.
+    </p>
+  </div>
+}
+else
+{
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+      <div class="page-title">Operations Dashboard</div>
+      <div class="page-sub">@DateTime.Now.ToString("dddd, d MMMM yyyy")</div>
+    </div>
+    <span style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;padding:4px 14px;font-size:.75rem;font-weight:700;color:#16a34a">
+      <span style="width:7px;height:7px;border-radius:50%;background:#16a34a"></span> Connected
+    </span>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="kpi" style="border-left:3px solid var(--blue)">
+        <div class="kpi-icon" style="background:#eff6ff;color:var(--blue)"><i class="bi bi-buildings"></i></div>
+        <div><div class="kpi-num" style="color:var(--blue)">@(Model.Occupancy?.Summary.OccupancyRate ?? 0)%</div><div class="kpi-label">Occupancy Rate</div></div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="kpi" style="border-left:3px solid #d97706">
+        <div class="kpi-icon" style="background:#fffbeb;color:#d97706"><i class="bi bi-tools"></i></div>
+        <div><div class="kpi-num" style="color:#d97706">@(Model.MaintenanceStats?.ByStatus.Where(s=>s.Status!="Closed").Sum(s=>s.Count)??0)</div><div class="kpi-label">Open Requests</div></div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="kpi" style="border-left:3px solid #16a34a">
+        <div class="kpi-icon" style="background:#f0fdf4;color:#16a34a"><i class="bi bi-cash-coin"></i></div>
+        <div><div class="kpi-num" style="color:#16a34a">@(Model.PaymentSummary?.CollectionRate ?? 0)%</div><div class="kpi-label">Collection Rate</div></div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="kpi" style="border-left:3px solid #dc2626">
+        <div class="kpi-icon" style="background:#fef2f2;color:#dc2626"><i class="bi bi-exclamation-triangle"></i></div>
+        <div><div class="kpi-num" style="color:#dc2626">@(Model.PaymentSummary?.OverdueCount ?? 0)</div><div class="kpi-label">Overdue Payments</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-7">
+      <div class="card p-4">
+        <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:1rem">Occupancy by Building</div>
+        @if (Model.Occupancy?.ByBuilding?.Any() == true)
+        {
+          @foreach (var b in Model.Occupancy.ByBuilding)
+          {
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span style="font-size:.83rem;font-weight:600">@b.BuildingName</span>
+                <span style="font-size:.8rem;font-weight:700;color:var(--blue)">@b.OccupancyRate%</span>
+              </div>
+              <div class="progress" style="height:7px;background:#e2e8f0">
+                <div class="progress-bar" style="width:@b.OccupancyRate%;background:var(--blue)"></div>
+              </div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:3px">@b.Occupied occupied / @b.TotalUnits total</div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="card p-4">
+        <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:1rem">Maintenance by Status</div>
+        <canvas id="maintChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+}
+
+@section Scripts {
+<script>
+var hasData = @Html.Raw((Model.MaintenanceStats?.ByStatus?.Any() == true).ToString().ToLower());
+if (hasData) {
+  var labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+      Model.MaintenanceStats!.ByStatus.Select(s => s.Status).ToList()));
+  var data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+      Model.MaintenanceStats!.ByStatus.Select(s => s.Count).ToList()));
+  new Chart(document.getElementById('maintChart'), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: ['#fbbf24','#60a5fa','#34d399','#f87171','#94a3b8'], borderWidth: 0 }] },
+    options: { plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } }, cutout: '68%', responsive: true }
+  });
+}
+</script>
+}
