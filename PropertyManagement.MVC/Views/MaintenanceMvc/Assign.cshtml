@@ -1,0 +1,31 @@
+﻿@model PropertyManagement.API.Models.MaintenanceRequest
+@{
+    ViewData["Title"] = "Assign Staff";
+    var staffList = ViewBag.StaffList as List<PropertyManagement.API.Models.MaintenanceStaff>;
+}
+
+<h2>Assign Staff to Request</h2>
+
+<p><strong>Ticket:</strong> @Model.TicketNumber</p>
+<p><strong>Category:</strong> @Model.Category</p>
+<p><strong>Status:</strong> @Model.Status</p>
+
+<form asp-action="AssignConfirmed" method="post">
+    <input type="hidden" name="requestId" value="@Model.RequestId" />
+
+    <div class="form-group">
+        <label>Select Staff</label>
+        <select name="staffId" class="form-control">
+            @foreach (var staff in staffList)
+            {
+                <option value="@staff.Id">
+                    @staff.Email (@staff.Skills)
+                </option>
+            }
+        </select>
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-success">Assign</button>
+    <a asp-action="All" class="btn btn-secondary">Back</a>
+</form>

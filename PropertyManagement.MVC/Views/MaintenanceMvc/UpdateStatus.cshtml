@@ -1,0 +1,38 @@
+﻿@model PropertyManagement.API.Models.MaintenanceRequest
+
+@{
+    ViewData["Title"] = "Update Status";
+}
+
+<h2>Update Request Status</h2>
+
+<p><strong>Ticket:</strong> @Model.TicketNumber</p>
+<p><strong>Category:</strong> @Model.Category</p>
+<p><strong>Current Status:</strong> @Model.Status</p>
+
+<form asp-controller="MaintenanceMvc"
+      asp-action="UpdateStatus"
+      method="post">
+
+    <input type="hidden" name="id" value="@Model.RequestId" />
+
+    <div class="form-group">
+        <label>New Status</label>
+        <select name="status" class="form-control">
+            <option value="InProgress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Resolution Notes</label>
+        <textarea name="resolutionNotes" class="form-control" rows="4"></textarea>
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-success">Update</button>
+    <a asp-controller="MaintenanceMvc"
+       asp-action="MyAssignments"
+       class="btn btn-secondary">Back</a>
+</form>

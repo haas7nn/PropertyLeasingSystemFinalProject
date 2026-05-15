@@ -1,0 +1,22 @@
+﻿@model PropertyManagement.API.Models.MaintenanceStaff
+
+<h2>Edit Staff Availability</h2>
+
+<p><strong>Email:</strong> @Model.Email</p>
+<p><strong>Skills:</strong> @Model.Skills</p>
+
+<form method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+
+    <div class="form-group">
+        <label>Availability Status</label>
+        <select name="availabilityStatus" class="form-control">
+            <option value="Available">Available</option>
+            <option value="Unavailable">Unavailable</option>
+        </select>
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
