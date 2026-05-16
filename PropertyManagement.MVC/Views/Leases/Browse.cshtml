@@ -1,0 +1,77 @@
+@model IEnumerable<PropertyManagement.MVC.Models.UnitViewModel>
+@{ ViewData["Title"] = "Available Units"; }
+
+<div class="page-wrap" style="padding-top:2rem">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Available Units</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Browse Units</li>
+      </ol>
+    </div>
+    <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="bi bi-file-earmark-text"></i> My Applications</a>
+  </div>
+
+  @if (!Model.Any())
+  {
+    <div class="dtable">
+      <div class="empty-state">
+        <div class="empty-icon" style="background:var(--brand-bg);color:var(--brand)"><i class="bi bi-door-open fs-3"></i></div>
+        <div class="empty-title">No units available right now</div>
+        <div class="empty-sub">All units are currently occupied. Check back soon or contact the property manager.</div>
+      </div>
+    </div>
+  }
+  else
+  {
+    <div class="row g-3">
+      @foreach (var u in Model)
+      {
+        <div class="col-md-6 col-lg-4">
+          <div class="card p-0" style="overflow:hidden;transition:box-shadow .2s,transform .2s" onmouseenter="this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.transform='translateY(-3px)'" onmouseleave="this.style.boxShadow='';this.style.transform=''">
+            <div style="background:var(--navy);padding:1.25rem 1.4rem;display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:.75rem">
+                <div style="width:40px;height:40px;background:rgba(99,102,241,.35);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem">
+                  <i class="bi bi-door-closed-fill"></i>
+                </div>
+                <div>
+                  <div style="color:#fff;font-weight:700;font-size:1rem">Unit @u.UnitNumber</div>
+                  <div style="color:rgba(255,255,255,.45);font-size:.75rem">@u.BuildingName</div>
+                </div>
+              </div>
+              <span class="badge s-available">Available</span>
+            </div>
+            <div style="padding:1.1rem 1.4rem">
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700">Type</div>
+                  <div style="font-size:.88rem;font-weight:600;margin-top:2px">@u.Type@(u.Bedrooms.HasValue ? $" · {u.Bedrooms} bd" : "")</div>
+                </div>
+                <div class="col-6">
+                  <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700">Size</div>
+                  <div style="font-size:.88rem;font-weight:600;margin-top:2px">@(u.SizeInSqFt > 0 ? $"{u.SizeInSqFt} sqft" : "")</div>
+                </div>
+              </div>
+              @if (!string.IsNullOrEmpty(u.Amenities))
+              {
+                <div style="font-size:.75rem;color:var(--muted);margin-bottom:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="@u.Amenities">
+                  <i class="bi bi-stars me-1"></i>@u.Amenities
+                </div>
+              }
+              <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:.85rem;margin-top:.25rem">
+                <div>
+                  <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700">Monthly Rent</div>
+                  <div style="font-size:1.2rem;font-weight:800;color:var(--brand)">BD @u.MonthlyRent.ToString("N2")</div>
+                </div>
+                <a asp-action="Apply" asp-route-unitId="@u.UnitId" class="btn btn-primary btn-sm">
+                  <i class="bi bi-file-earmark-plus"></i> Apply
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
