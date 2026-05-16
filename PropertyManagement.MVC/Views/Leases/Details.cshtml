@@ -1,0 +1,130 @@
+@model PropertyManagement.MVC.Models.LeaseViewModel
+@{ ViewData["Title"] = "Lease Details"; }
+<div class="page-wrap" style="padding-top:2rem;max-width:700px">
+  <div class="ph">
+    <div><div class="ph-title">Lease Details</div>
+    <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li><li class="breadcrumb-item"><a asp-action="Index">Leases</a></li><li class="breadcrumb-item active">#@Model.LeaseId</li></ol></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      @if (User.IsInRole("PropertyManager"))
+      {
+        <a asp-action="Edit" asp-route-id="@Model.LeaseId" class="btn btn-secondary btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+
+        @if (Model.Status == "Application")
+        {
+          <form asp-action="Screen" asp-route-id="@Model.LeaseId" method="post" style="display:inline">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-warning btn-sm"><i class="bi bi-search"></i> Move to Screening</button>
+          </form>
+          <form asp-action="Approve" asp-route-id="@Model.LeaseId" method="post" style="display:inline">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-success btn-sm"><i class="bi bi-check2-circle"></i> Approve</button>
+          </form>
+          <form asp-action="Reject" asp-route-id="@Model.LeaseId" method="post" style="display:inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="reason" value="Application rejected." />
+            <button class="btn btn-danger btn-sm"><i class="bi bi-x-circle"></i> Reject</button>
+          </form>
+        }
+        else if (Model.Status == "Screening")
+        {
+          <form asp-action="Approve" asp-route-id="@Model.LeaseId" method="post" style="display:inline">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-success btn-sm"><i class="bi bi-check2-circle"></i> Approve</button>
+          </form>
+          <form asp-action="Reject" asp-route-id="@Model.LeaseId" method="post" style="display:inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="reason" value="Rejected after screening." />
+            <button class="btn btn-danger btn-sm"><i class="bi bi-x-circle"></i> Reject</button>
+          </form>
+        }
+        else if (Model.Status == "Active")
+        {
+          <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#renewModal">
+            <i class="bi bi-arrow-repeat"></i> Renew
+          </button>
+          <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#terminateModal">
+            <i class="bi bi-x-circle"></i> Terminate
+          </button>
+        }
+      }
+      <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+    </div>
+  </div>
+
+  @{var sc = Model.Status switch {"Active"=>"s-active","Application"=>"s-pending","Screening"=>"s-screening","Rejected"=>"s-rejected","Terminated"=>"s-terminated",_=>"s-pending"};}
+  <div class="card p-4 mb-3">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem">Lease #@Model.LeaseId</div>
+        <div style="font-size:1.6rem;font-weight:800;letter-spacing:-.03em">Unit @Model.UnitNumber</div>
+        <div style="font-size:.9rem;color:var(--muted);margin-top:2px">@Model.BuildingName</div>
+      </div>
+      <span class="badge @sc" style="font-size:.85rem;padding:.45em 1.1em">@Model.Status</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+      <div><div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Tenant</div><div class="fw-600" style="font-size:.9rem">@Model.TenantEmail</div></div>
+      <div><div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Applied</div><div class="fw-600" style="font-size:.9rem">@Model.ApplicationDate.ToString("d MMM yyyy")</div></div>
+      <div><div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Start Date</div><div class="fw-600" style="font-size:.9rem">@Model.StartDate.ToString("d MMM yyyy")</div></div>
+      <div><div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">End Date</div><div class="fw-600" style="font-size:.9rem">@Model.EndDate.ToString("d MMM yyyy")</div></div>
+      <div><div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Monthly Rent</div><div class="fw-700" style="font-size:1rem;color:var(--brand)">BD @Model.MonthlyRent.ToString("N2")</div></div>
+      <div><div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Security Deposit</div><div class="fw-700" style="font-size:1rem">BD @Model.SecurityDeposit.ToString("N2")</div></div>
+      @if (!string.IsNullOrEmpty(Model.ScreeningNotes))
+      {<div style="grid-column:1/-1"><div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Screening Notes</div><div style="font-size:.875rem;color:var(--text2)">@Model.ScreeningNotes</div></div>}
+      @if (!string.IsNullOrEmpty(Model.RejectionReason))
+      {<div style="grid-column:1/-1"><div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:.25rem">Reason</div><div style="font-size:.875rem;color:var(--red)">@Model.RejectionReason</div></div>}
+    </div>
+  </div>
+</div>
+
+@if (User.IsInRole("PropertyManager") && Model.Status == "Active")
+{
+  <!-- Renew Modal -->
+  <div class="modal fade" id="renewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-arrow-repeat me-2 text-primary"></i>Renew Lease</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form asp-action="Renew" asp-route-id="@Model.LeaseId" method="post">
+          @Html.AntiForgeryToken()
+          <div class="modal-body">
+            <label class="form-label fw-600">New End Date</label>
+            <input type="date" name="newEndDate" class="form-control"
+                   min="@Model.EndDate.AddDays(1).ToString("yyyy-MM-dd")"
+                   value="@Model.EndDate.AddYears(1).ToString("yyyy-MM-dd")" required />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-arrow-repeat"></i> Confirm Renewal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terminate Modal -->
+  <div class="modal fade" id="terminateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-x-circle me-2 text-danger"></i>Terminate Lease</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form asp-action="Terminate" asp-route-id="@Model.LeaseId" method="post">
+          @Html.AntiForgeryToken()
+          <div class="modal-body">
+            <div class="alert alert-warning">This action is irreversible. The unit will be marked as Available.</div>
+            <label class="form-label fw-600">Reason for Termination</label>
+            <textarea name="reason" class="form-control" rows="3"
+                      placeholder="e.g. Lease expired, tenant request, policy violation..." required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-x-circle"></i> Confirm Termination</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
