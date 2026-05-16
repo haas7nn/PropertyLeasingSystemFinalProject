@@ -1,0 +1,208 @@
+@model PropertyManagement.MVC.Models.MaintenanceDetailViewModel
+@{ ViewData["Title"] = "Request Details"; }
+
+<div class="page-wrap" style="padding-top:2rem">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Maintenance Request</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Maintenance" asp-action="Board">Live Board</a></li>
+        <li class="breadcrumb-item active">@Model.TicketNumber</li>
+      </ol>
+    </div>
+  </div>
+
+  @if (TempData["Success"] != null)
+  {
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  }
+  @if (TempData["Error"] != null)
+  {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  }
+
+  <div class="row g-4">
+    <!-- Left column: request info -->
+    <div class="col-lg-8">
+      <div class="card-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+          <div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;color:var(--brand)">@Model.TicketNumber</span>
+            @{
+              var sc = Model.Status switch {
+                "Submitted"  => "s-pending",
+                "Assigned"   => "s-assigned",
+                "InProgress" => "s-inprogress",
+                "Resolved"   => "s-resolved",
+                "Closed"     => "s-closed",
+                _            => "s-pending"
+              };
+            }
+            <span class="badge @sc ms-2">@Model.Status</span>
+          </div>
+          @{
+            var pc = Model.Priority switch {
+              "Urgent" => "background:#fee2e2;color:#dc2626",
+              "High"   => "background:#fef3c7;color:#d97706",
+              "Medium" => "background:#dbeafe;color:#2563eb",
+              _        => "background:#f1f5f9;color:#475569"
+            };
+          }
+          <span style="font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:99px;@pc">@Model.Priority</span>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <div class="form-label-sm">Category</div>
+            <div class="fw-600">@Model.Category</div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-label-sm">Unit</div>
+            <div class="fw-600">@Model.UnitNumber, @Model.BuildingName</div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-label-sm">Tenant</div>
+            <div class="fw-600">@Model.TenantEmail</div>
+            @if (!string.IsNullOrEmpty(Model.TenantPhone))
+            {
+              <div style="font-size:.78rem;color:var(--muted)">@Model.TenantPhone</div>
+            }
+          </div>
+          <div class="col-sm-6">
+            <div class="form-label-sm">Submitted</div>
+            <div class="fw-600">@Model.SubmittedDate.ToString("dd MMM yyyy, HH:mm")</div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div class="form-label-sm">Description</div>
+          <div style="background:var(--surface);border-radius:10px;padding:1rem;font-size:.88rem;line-height:1.7;white-space:pre-wrap">@Model.Description</div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ResolutionNotes))
+        {
+          <div class="mb-2">
+            <div class="form-label-sm">Resolution Notes</div>
+            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:1rem;font-size:.88rem;line-height:1.7">@Model.ResolutionNotes</div>
+          </div>
+        }
+
+        @if (Model.ClosedDate.HasValue)
+        {
+          <div style="font-size:.78rem;color:var(--muted)">Closed: @Model.ClosedDate.Value.ToString("dd MMM yyyy, HH:mm")</div>
+        }
+      </div>
+    </div>
+
+    <!-- Right column: actions -->
+    <div class="col-lg-4">
+
+      <!-- Current assignment info -->
+      <div class="card-box mb-3">
+        <div class="card-box-title mb-3"><i class="bi bi-person-badge me-2"></i>Assigned Staff</div>
+        @if (!string.IsNullOrEmpty(Model.AssignedStaffName))
+        {
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:38px;height:38px;border-radius:50%;background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem">
+              @Model.AssignedStaffName[0].ToString().ToUpper()
+            </div>
+            <div>
+              <div class="fw-600" style="font-size:.88rem">@Model.AssignedStaffName</div>
+              <div style="font-size:.72rem;color:#16a34a"><i class="bi bi-check-circle-fill me-1"></i>Assigned</div>
+            </div>
+          </div>
+        }
+        else
+        {
+          <div style="color:var(--muted);font-size:.84rem"><i class="bi bi-person-x me-1"></i>Not yet assigned</div>
+        }
+      </div>
+
+      <!-- Assign Staff (Property Manager only) -->
+      @if (User.IsInRole("PropertyManager") && Model.Status != "Closed")
+      {
+        <div class="card-box mb-3">
+          <div class="card-box-title mb-3"><i class="bi bi-person-check me-2"></i>Assign Staff</div>
+          <form asp-action="Assign" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="requestId" value="@Model.RequestId" />
+            <select name="staffId" class="form-select form-select-sm mb-2" required>
+              <option value="">Select staff member</option>
+              @foreach (var s in Model.AvailableStaff)
+              {
+                var skills = string.Empty;
+                if (!string.IsNullOrWhiteSpace(s.Skills) && s.Skills != "[]")
+                {
+                  try
+                  {
+                    var parsed = System.Text.Json.JsonSerializer.Deserialize<List<string>>(s.Skills);
+                    skills = parsed != null ? string.Join(", ", parsed) : s.Skills;
+                  }
+                  catch { skills = s.Skills; }
+                }
+                var badge = s.AvailabilityStatus == "Available" ? "✓" : "●";
+                @if (s.Id == Model.AssignedStaffId)
+                {
+                  <option value="@s.Id" selected="selected">@badge @s.Email @(skills.Length > 0 ? $"[{skills}]" : "")</option>
+                }
+                else
+                {
+                  <option value="@s.Id">@badge @s.Email @(skills.Length > 0 ? $"[{skills}]" : "")</option>
+                }
+              }
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm w-100">
+              <i class="bi bi-person-check me-1"></i>Assign
+            </button>
+          </form>
+        </div>
+      }
+
+      <!-- Update Status (Manager + Staff) -->
+      @if (Model.Status != "Closed")
+      {
+        <div class="card-box">
+          <div class="card-box-title mb-3"><i class="bi bi-arrow-repeat me-2"></i>Update Status</div>
+          <form asp-action="UpdateStatus" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="requestId" value="@Model.RequestId" />
+            <select name="newStatus" class="form-select form-select-sm mb-2" required>
+              <option value="">Select new status</option>
+              @foreach (var s in new[] { "Submitted", "Assigned", "InProgress", "Resolved", "Closed" })
+              {
+                @if (s == Model.Status)
+                {
+                  <option value="@s" selected="selected">@s</option>
+                }
+                else
+                {
+                  <option value="@s">@s</option>
+                }
+              }
+            </select>
+            <textarea name="resolutionNotes" class="form-control form-control-sm mb-2"
+                      rows="3" placeholder="Resolution notes (required when resolving)">@Model.ResolutionNotes</textarea>
+            <button type="submit" class="btn btn-secondary btn-sm w-100">
+              <i class="bi bi-check2 me-1"></i>Update Status
+            </button>
+          </form>
+        </div>
+      }
+
+    </div>
+  </div>
+</div>
+
+<style>
+.card-box { background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.4rem; }
+.card-box-title { font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted); }
+.form-label-sm { font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.2rem; }
+.fw-600 { font-weight:600; }
+</style>
