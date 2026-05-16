@@ -1,0 +1,91 @@
+@model PropertyManagement.MVC.Models.LeaseViewModel
+@{
+    ViewData["Title"] = "Apply for Unit";
+    var unit = ViewBag.Unit as PropertyManagement.API.Models.Unit;
+}
+
+<div class="page-wrap" style="padding-top:2rem;max-width:760px">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Apply for Unit @Model.UnitNumber</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item"><a asp-action="Browse">Available Units</a></li>
+        <li class="breadcrumb-item active">Apply</li>
+      </ol>
+    </div>
+  </div>
+
+  @if (unit != null)
+  {
+    <div class="alert alert-info mb-4">
+      <i class="bi bi-info-circle-fill"></i>
+      <span>You are applying for <strong>Unit @unit.UnitNumber</strong> in <strong>@unit.Building?.Name</strong>. Rent: BD @unit.MonthlyRent.ToString("N2")/month.</span>
+    </div>
+  }
+
+  <div class="form-card">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+    <form asp-action="Apply" method="post">
+      @Html.AntiForgeryToken()
+      <input type="hidden" asp-for="UnitId" />
+      <input type="hidden" asp-for="TenantId" />
+      <input type="hidden" asp-for="UnitNumber" />
+      <input type="hidden" asp-for="BuildingName" />
+
+      <div class="form-section">
+        <div class="form-section-title">Desired Lease Period</div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label asp-for="StartDate" class="form-label">Start Date <span style="color:var(--red)">*</span></label>
+            <input asp-for="StartDate" type="date" class="form-control" />
+            <span asp-validation-for="StartDate" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+          <div class="col-md-6">
+            <label asp-for="EndDate" class="form-label">End Date <span style="color:var(--red)">*</span></label>
+            <input asp-for="EndDate" type="date" class="form-control" />
+            <span asp-validation-for="EndDate" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Financial Details</div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label asp-for="MonthlyRent" class="form-label">Monthly Rent (BD)</label>
+            <div style="position:relative">
+              <span style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.82rem;font-weight:600">BD</span>
+              <input asp-for="MonthlyRent" type="number" step="0.01" class="form-control" style="padding-left:2.5rem" readonly />
+            </div>
+            <div class="form-text">Set by the property manager for this unit.</div>
+          </div>
+          <div class="col-md-6">
+            <label asp-for="SecurityDeposit" class="form-label">Security Deposit (BD) <span style="color:var(--red)">*</span></label>
+            <div style="position:relative">
+              <span style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.82rem;font-weight:600">BD</span>
+              <input asp-for="SecurityDeposit" type="number" step="0.01" class="form-control" style="padding-left:2.5rem" />
+            </div>
+            <span asp-validation-for="SecurityDeposit" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Additional Notes <span style="color:var(--muted);font-weight:400;font-size:.78rem">(optional)</span></div>
+        <textarea asp-for="ScreeningNotes" class="form-control" rows="3"
+          placeholder="Any additional information you'd like to share with the property manager (employment details, move-in date flexibility, references, etc.)"></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-send-fill"></i> Submit Application</button>
+        <a asp-action="Browse" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to Units</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+  @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
