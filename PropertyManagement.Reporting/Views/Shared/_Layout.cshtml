@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Property Management Reports</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root { --navy:#0a0f1e; --navy2:#111827; --navy3:#1a2236; --blue:#2563eb; --blue2:#3b82f6; --blue3:#60a5fa; --line:rgba(255,255,255,.07); --muted:#64748b; }
+        body { font-family:'DM Sans',sans-serif; background:#f8fafc; display:flex; min-height:100vh; }
+        .sidebar { width:220px; min-height:100vh; background:var(--navy); border-right:1px solid var(--line); display:flex; flex-direction:column; flex-shrink:0; position:fixed; top:0; left:0; bottom:0; }
+        .sidebar-brand { padding:1.5rem 1.25rem 1rem; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+        .sidebar-brand .icon { width:34px; height:34px; background:var(--blue); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.95rem; color:#fff; flex-shrink:0; }
+        .sidebar-brand .name { color:#fff; font-weight:700; font-size:.95rem; letter-spacing:-.02em; line-height:1.2; }
+        .sidebar-brand .sub  { color:rgba(255,255,255,.35); font-size:.65rem; font-weight:500; }
+        .sidebar-nav { padding:.75rem .75rem; flex:1; }
+        .sidebar-nav a { display:flex; align-items:center; gap:9px; padding:.6rem .9rem; border-radius:8px; color:rgba(255,255,255,.55); text-decoration:none; font-size:.82rem; font-weight:500; margin-bottom:2px; transition:all .15s; }
+        .sidebar-nav a:hover { background:rgba(255,255,255,.06); color:#fff; }
+        .sidebar-nav a.active { background:rgba(37,99,235,.25); color:var(--blue3); }
+        .sidebar-nav a i { font-size:.95rem; width:18px; text-align:center; }
+        .sidebar-label { font-size:.65rem; text-transform:uppercase; letter-spacing:.08em; color:rgba(255,255,255,.2); font-weight:700; padding:.75rem .9rem .3rem; }
+        .sidebar-footer { padding:1rem 1.25rem; border-top:1px solid var(--line); }
+        .sidebar-footer .badge-role { background:rgba(37,99,235,.2); color:var(--blue3); font-size:.68rem; font-weight:700; border-radius:6px; padding:3px 9px; display:inline-block; }
+        .main-content { margin-left:220px; flex:1; padding:2rem 2.5rem; max-width:calc(100vw - 220px); }
+        .page-title { font-size:1.4rem; font-weight:800; letter-spacing:-.04em; color:#0f172a; }
+        .page-sub { font-size:.8rem; color:var(--muted); margin-top:2px; }
+        .kpi { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:1.2rem 1.4rem; display:flex; align-items:center; gap:1rem; }
+        .kpi-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+        .kpi-num { font-size:1.7rem; font-weight:800; letter-spacing:-.04em; line-height:1; }
+        .kpi-label { font-size:.72rem; color:var(--muted); font-weight:500; margin-top:2px; }
+        .card { border:1px solid #e2e8f0; border-radius:12px; box-shadow:none; background:#fff; }
+        .section-divider { height:1px; background:#e2e8f0; margin:1.25rem 0; }
+        .alert { border-radius:10px; border:none; font-size:.88rem; }
+        .alert-danger { background:#fef2f2; color:#dc2626; }
+        .progress { border-radius:99px; }
+        .progress-bar { border-radius:99px; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="icon"><i class="bi bi-bar-chart-fill"></i></div>
+            <div><div class="name">Property Manager</div><div class="sub">Reports</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-label">Reports</div>
+            <a asp-controller="Reports" asp-action="Dashboard" class="@(ViewData["ActivePage"]?.ToString()=="Dashboard"?"active":"")"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a asp-controller="Reports" asp-action="Occupancy"  class="@(ViewData["ActivePage"]?.ToString()=="Occupancy" ?"active":"")"><i class="bi bi-buildings"></i> Occupancy</a>
+            <a asp-controller="Reports" asp-action="Maintenance" class="@(ViewData["ActivePage"]?.ToString()=="Maintenance"?"active":"")"><i class="bi bi-tools"></i> Maintenance</a>
+            <a asp-controller="Reports" asp-action="Payments"   class="@(ViewData["ActivePage"]?.ToString()=="Payments"  ?"active":"")"><i class="bi bi-credit-card"></i> Payments</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="badge-role"><i class="bi bi-shield-lock-fill me-1"></i> Property Manager</div>
+            <div style="font-size:.68rem;color:rgba(255,255,255,.25);margin-top:.4rem">Signed in securely</div>
+            <form asp-controller="Reports" asp-action="Logout" method="post" style="margin-top:.75rem">
+                @Html.AntiForgeryToken()
+                <button type="submit" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.45);border-radius:7px;padding:5px 12px;font-size:.72rem;font-weight:600;width:100%;cursor:pointer;display:flex;align-items:center;gap:6px;justify-content:center">
+                    <i class="bi bi-box-arrow-left"></i> Sign Out
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger mb-3">@TempData["Error"]</div>
+        }
+        @RenderBody()
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
