@@ -1,0 +1,45 @@
+@model PropertyManagement.Reporting.Models.OccupancyReport
+@{ ViewData["Title"] = "Occupancy"; ViewData["ActivePage"] = "Occupancy"; }
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div><div class="page-title">Occupancy Report</div><div class="page-sub">Unit availability across all buildings</div></div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="kpi"><div class="kpi-icon" style="background:#eff6ff;color:var(--blue)"><i class="bi bi-buildings"></i></div><div><div class="kpi-num" style="color:var(--blue)">@Model.Summary.OccupancyRate%</div><div class="kpi-label">Occupancy Rate</div></div></div></div>
+  <div class="col-md-3"><div class="kpi"><div class="kpi-icon" style="background:#f0fdf4;color:#16a34a"><i class="bi bi-person-check"></i></div><div><div class="kpi-num" style="color:#16a34a">@Model.Summary.OccupiedUnits</div><div class="kpi-label">Occupied</div></div></div></div>
+  <div class="col-md-3"><div class="kpi"><div class="kpi-icon" style="background:#eff6ff;color:var(--blue)"><i class="bi bi-door-open"></i></div><div><div class="kpi-num">@Model.Summary.AvailableUnits</div><div class="kpi-label">Available</div></div></div></div>
+  <div class="col-md-3"><div class="kpi"><div class="kpi-icon" style="background:#f8fafc;color:#64748b"><i class="bi bi-hash"></i></div><div><div class="kpi-num">@Model.Summary.TotalUnits</div><div class="kpi-label">Total Units</div></div></div></div>
+</div>
+<div class="card p-0" style="overflow:hidden">
+  <table class="table table-hover mb-0">
+    <thead style="background:var(--navy)">
+      <tr>
+        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1.25rem;border:none">Building</th>
+        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Location</th>
+        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Total</th>
+        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Occupied</th>
+        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Available</th>
+        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Rate</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var b in Model.ByBuilding)
+      {
+        <tr>
+          <td style="font-weight:700;padding:.85rem 1.25rem;font-size:.88rem">@b.BuildingName</td>
+          <td style="font-size:.85rem;color:var(--muted)">@(b.Location ?? "—")</td>
+          <td style="font-size:.88rem">@b.TotalUnits</td>
+          <td><span style="background:#dcfce7;color:#15803d;font-size:.75rem;font-weight:700;padding:2px 9px;border-radius:99px">@b.Occupied</span></td>
+          <td><span style="background:#dbeafe;color:#1d4ed8;font-size:.75rem;font-weight:700;padding:2px 9px;border-radius:99px">@b.Available</span></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="progress flex-grow-1" style="height:5px;background:#e2e8f0;min-width:60px">
+                <div class="progress-bar" style="width:@b.OccupancyRate%;background:var(--blue)"></div>
+              </div>
+              <span style="font-size:.78rem;font-weight:700;color:var(--blue);min-width:36px">@b.OccupancyRate%</span>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
