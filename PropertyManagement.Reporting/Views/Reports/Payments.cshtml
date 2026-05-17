@@ -1,0 +1,28 @@
+@model PropertyManagement.Reporting.Models.PaymentSummaryReport
+@{ ViewData["Title"] = "Payments"; ViewData["ActivePage"] = "Payments"; }
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div><div class="page-title">Payment Summary</div><div class="page-sub">Revenue and overdue balances</div></div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="kpi" style="border-left:3px solid #16a34a"><div class="kpi-icon" style="background:#f0fdf4;color:#16a34a"><i class="bi bi-graph-up-arrow"></i></div><div><div class="kpi-num" style="color:#16a34a">@Model.CollectionRate%</div><div class="kpi-label">Collection Rate</div></div></div></div>
+  <div class="col-md-3"><div class="kpi" style="border-left:3px solid var(--blue)"><div class="kpi-icon" style="background:#eff6ff;color:var(--blue)"><i class="bi bi-cash-coin"></i></div><div><div class="kpi-num" style="font-size:1.25rem;color:var(--blue)">@Model.TotalPaid.ToString("N0") <span style="font-size:.75rem;font-weight:500">BD</span></div><div class="kpi-label">Collected</div></div></div></div>
+  <div class="col-md-3"><div class="kpi" style="border-left:3px solid #d97706"><div class="kpi-icon" style="background:#fffbeb;color:#d97706"><i class="bi bi-hourglass-split"></i></div><div><div class="kpi-num" style="font-size:1.25rem;color:#d97706">@Model.TotalPending.ToString("N0") <span style="font-size:.75rem;font-weight:500">BD</span></div><div class="kpi-label">Pending</div></div></div></div>
+  <div class="col-md-3"><div class="kpi" style="border-left:3px solid #dc2626"><div class="kpi-icon" style="background:#fef2f2;color:#dc2626"><i class="bi bi-exclamation-circle"></i></div><div><div class="kpi-num" style="font-size:1.25rem;color:#dc2626">@Model.TotalOverdue.ToString("N0") <span style="font-size:.75rem;font-weight:500">BD</span></div><div class="kpi-label">Overdue (@Model.OverdueCount)</div></div></div></div>
+</div>
+<div class="card p-4">
+  <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:1rem">Revenue Breakdown</div>
+  <canvas id="payChart" height="70"></canvas>
+</div>
+@section Scripts {
+<script>
+new Chart(document.getElementById('payChart'),{
+  type:'bar',
+  data:{
+    labels:['Total Due','Collected','Pending','Overdue'],
+    datasets:[{data:[@Model.TotalDue,@Model.TotalPaid,@Model.TotalPending,@Model.TotalOverdue],
+      backgroundColor:['#cbd5e1','#34d399','#fbbf24','#f87171'],borderRadius:8,borderWidth:0}]
+  },
+  options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:11}}}}}
+});
+</script>
+}
