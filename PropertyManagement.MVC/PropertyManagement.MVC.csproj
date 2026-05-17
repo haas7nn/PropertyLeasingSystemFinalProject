@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PropertyManagement.API\PropertyManagement.API.csproj" />
+  </ItemGroup>
+
 </Project>

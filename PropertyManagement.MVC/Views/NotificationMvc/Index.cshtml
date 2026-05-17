@@ -1,0 +1,45 @@
+﻿@model IEnumerable<PropertyManagement.API.Models.Notification>
+
+<h2>Notifications</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Message</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model)
+        {
+            <tr>
+                <td>@n.Message</td>
+                <td>@n.Type</td>
+                <td>@n.CreatedDate.ToString("g")</td>
+                <td>
+                    @if (n.IsRead)
+                    {
+                        <span class="text-success">Read</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">Unread</span>
+                    }
+                </td>
+                <td>
+                    @if (!n.IsRead)
+                    {
+                        <a asp-action="MarkAsRead"
+                               asp-route-id="@n.NotificationId"
+                               class="btn btn-sm btn-primary">
+                            Mark as Read
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

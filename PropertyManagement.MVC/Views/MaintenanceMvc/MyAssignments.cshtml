@@ -1,0 +1,40 @@
+﻿@model IEnumerable<PropertyManagement.API.Models.MaintenanceRequest>
+
+@{
+    ViewData["Title"] = "My Assigned Requests";
+}
+
+<h2>My Assigned Requests</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Ticket</th>
+            <th>Tenant</th>
+            <th>Unit</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.TicketNumber</td>
+                <td>@item.Tenant?.Email</td>
+                <td>@item.Unit?.UnitNumber</td>
+                <td>@item.Category</td>
+                <td>@item.Status</td>
+                <td>
+                    <a asp-controller="MaintenanceMvc"
+                           asp-action="UpdateStatus"
+                           asp-route-id="@item.RequestId"
+                           class="btn btn-sm btn-success">
+                        Update Status
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

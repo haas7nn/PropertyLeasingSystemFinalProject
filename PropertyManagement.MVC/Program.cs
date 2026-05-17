@@ -1,8 +1,13 @@
 using PropertyManagement.MVC.Services;
+using Microsoft.EntityFrameworkCore;
+using PropertyManagement.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllersWithViews();
 
 // Register HttpClient

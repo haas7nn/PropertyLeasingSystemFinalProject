@@ -58,6 +58,20 @@ namespace PropertyManagement.API.Controllers
                 closedDate = request.ClosedDate
             });
         }
+        private bool IsValidTransition(string currentStatus, string newStatus)
+        {
+            var validTransitions = new Dictionary<string, List<string>>
+    {
+        { "Submitted", new List<string> { "Assigned" } },
+        { "Assigned", new List<string> { "InProgress" } },
+        { "InProgress", new List<string> { "Resolved" } },
+        { "Resolved", new List<string> { "Closed" } },
+        { "Closed", new List<string>() }
+    };
+
+            return validTransitions.ContainsKey(currentStatus)
+                && validTransitions[currentStatus].Contains(newStatus);
+        }
 
         // GET ALL - Requires authentication
         [HttpGet]
@@ -170,10 +184,12 @@ namespace PropertyManagement.API.Controllers
             }
 
             // Validate status transition
-            var validStatuses = new[] { "Submitted", "Assigned", "InProgress", "Resolved", "Closed" };
-            if (!validStatuses.Contains(dto.Status))
+            if (!IsValidTransition(request.Status, dto.Status))
             {
-                return BadRequest(new { message = "Invalid status" });
+                return BadRequest(new
+                {
+                    message = $"Invalid status transition from {request.Status} to {dto.Status}"
+                });
             }
 
             request.Status = dto.Status;
@@ -187,6 +203,17 @@ namespace PropertyManagement.API.Controllers
             {
                 request.ClosedDate = DateTime.Now;
             }
+            // Create notification for tenant
+            var notification = new Notification
+            {
+                UserId = request.TenantId,
+                Message = $"Your maintenance request ({request.TicketNumber}) status changed to {dto.Status}",
+                Type = "MaintenanceStatusUpdate",
+                IsRead = false,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Notifications.Add(notification);
 
             await _context.SaveChangesAsync();
 
@@ -226,6 +253,30 @@ namespace PropertyManagement.API.Controllers
 
             request.AssignedStaffId = dto.StaffId;
             request.Status = "Assigned";
+
+            // Notify staff
+            var staffNotification = new Notification
+            {
+                UserId = staff.Id,
+                Message = $"New maintenance request assigned to you ({request.TicketNumber})",
+                Type = "MaintenanceAssigned",
+                IsRead = false,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Notifications.Add(staffNotification);
+
+            // Notify tenant
+            var tenantNotification = new Notification
+            {
+                UserId = request.TenantId,
+                Message = $"Your maintenance request has been assigned to {staff.Email}",
+                Type = "MaintenanceAssigned",
+                IsRead = false,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Notifications.Add(tenantNotification);
 
             await _context.SaveChangesAsync();
 

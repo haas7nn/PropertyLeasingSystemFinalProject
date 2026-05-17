@@ -1,0 +1,35 @@
+﻿@model IEnumerable<PropertyManagement.API.Models.MaintenanceRequest>
+
+@{
+    ViewData["Title"] = "My Maintenance Requests";
+}
+
+<h2>My Maintenance Requests</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Submit New Request</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ticket</th>
+            <th>Category</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Submitted</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.TicketNumber</td>
+                <td>@item.Category</td>
+                <td>@item.Priority</td>
+                <td>@item.Status</td>
+                <td>@item.SubmittedDate.ToString("g")</td>
+            </tr>
+        }
+    </tbody>
+</table>

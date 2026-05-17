@@ -1,0 +1,65 @@
+﻿@model IEnumerable<PropertyManagement.API.Models.MaintenanceRequest>
+
+@{
+    ViewData["Title"] = "All Maintenance Requests";
+}
+
+<h2>All Maintenance Requests</h2>
+
+<form method="get">
+    <select name="status" class="form-control" style="width:200px; display:inline-block;">
+        <option value="">All Status</option>
+        <option value="Submitted">Submitted</option>
+        <option value="Assigned">Assigned</option>
+        <option value="InProgress">In Progress</option>
+        <option value="Resolved">Resolved</option>
+        <option value="Closed">Closed</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<br />
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Ticket</th>
+            <th>Tenant</th>
+            <th>Unit</th>
+            <th>Category</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assigned Staff</th>
+            <th>Actions</th>   <!-- ✅ New column -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.TicketNumber</td>
+                <td>@item.Tenant?.Email</td>
+                <td>@item.Unit?.UnitNumber</td>
+                <td>@item.Category</td>
+                <td>@item.Priority</td>
+                <td>@item.Status</td>
+                <td>@item.AssignedStaff?.Email</td>
+
+                <td>
+                    @if (item.Status == "Submitted" || item.Status == "Assigned")
+                    {
+                        <a asp-action="Assign"
+                               asp-route-id="@item.RequestId"
+                               class="btn btn-sm btn-primary">
+                            Assign
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No Action</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

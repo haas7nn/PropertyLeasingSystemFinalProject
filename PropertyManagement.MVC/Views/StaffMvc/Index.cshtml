@@ -1,0 +1,31 @@
+﻿@model IEnumerable<PropertyManagement.API.Models.MaintenanceStaff>
+
+<h2>Maintenance Staff</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Skills</th>
+            <th>Availability</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var staff in Model)
+        {
+            <tr>
+                <td>@staff.Email</td>
+                <td>@staff.Skills</td>
+                <td>@staff.AvailabilityStatus</td>
+                <td>
+                    <a asp-action="Edit"
+                           asp-route-id="@staff.Id"
+                           class="btn btn-sm btn-primary">
+                        Edit
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
