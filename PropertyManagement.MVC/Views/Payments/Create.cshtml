@@ -1,0 +1,56 @@
+@model PropertyManagement.MVC.Models.PaymentViewModel
+@{ ViewData["Title"] = "New Payment"; }
+
+<div class="page-wrap" style="padding-top:2rem;max-width:680px">
+  <div class="ph">
+    <div>
+      <div class="ph-title">New Payment Record</div>
+      <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li><li class="breadcrumb-item"><a asp-action="Index">Payments</a></li><li class="breadcrumb-item active">New</li></ol>
+    </div>
+  </div>
+
+  <div class="form-card">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+    }
+    <form asp-action="Create" method="post">
+      @Html.AntiForgeryToken()
+      <div class="form-section">
+        <div class="form-section-title">Lease</div>
+        <label asp-for="LeaseId" class="form-label">Active Lease <span style="color:var(--red)">*</span></label>
+        <select asp-for="LeaseId" class="form-select">
+          <option value="">Select active lease</option>
+          @foreach (dynamic l in (ViewBag.ActiveLeases ?? new List<object>()))
+          {
+            <option value="@l.LeaseId">@l.Tenant?.Email, Unit @l.Unit?.UnitNumber (BD @l.MonthlyRent/mo)</option>
+          }
+        </select>
+        <span asp-validation-for="LeaseId" class="text-danger" style="font-size:.76rem"></span>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Payment Details</div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label asp-for="DueDate" class="form-label">Due Date <span style="color:var(--red)">*</span></label>
+            <input asp-for="DueDate" type="date" class="form-control" required />
+            <span asp-validation-for="DueDate" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+          <div class="col-md-6">
+            <label asp-for="AmountDue" class="form-label">Amount Due (BD) <span style="color:var(--red)">*</span></label>
+            <div style="position:relative">
+              <span style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.82rem;font-weight:600">BD</span>
+              <input asp-for="AmountDue" type="number" step="0.01" min="0.01" class="form-control" style="padding-left:2.5rem" required />
+            </div>
+            <span asp-validation-for="AmountDue" class="text-danger" style="font-size:.76rem"></span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Create Record</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }
