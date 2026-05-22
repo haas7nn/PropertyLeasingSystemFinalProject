@@ -1,0 +1,84 @@
+@model IEnumerable<PropertyManagement.MVC.Models.NotificationViewModel>
+@{ ViewData["Title"] = "Notifications"; }
+
+<div class="page-wrap" style="padding-top:2rem;max-width:720px">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Notifications</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Notifications</li>
+      </ol>
+    </div>
+    @if (Model.Any())
+    {
+      <form asp-action="DeleteAll" method="post" onsubmit="return confirm('Clear all notifications?')">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-sm" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:.78rem">
+          <i class="bi bi-trash me-1"></i>Clear All
+        </button>
+      </form>
+    }
+  </div>
+
+  @if (TempData["Success"] != null)
+  {
+    <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  }
+
+  @if (!Model.Any())
+  {
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:3rem;text-align:center">
+      <div style="width:56px;height:56px;border-radius:50%;background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.4rem">
+        <i class="bi bi-bell-slash"></i>
+      </div>
+      <div style="font-weight:700;margin-bottom:.4rem">No notifications</div>
+      <div style="color:var(--muted);font-size:.85rem">You're all caught up. Notifications appear here when lease or maintenance events occur.</div>
+    </div>
+  }
+  else
+  {
+    <div style="display:flex;flex-direction:column;gap:.75rem">
+      @foreach (var n in Model)
+      {
+        var (icon, bg) = n.Type switch {
+            "LeaseApproved"       => ("check-circle-fill", "#f0fdf4"),
+            "LeaseRejected"       => ("x-circle-fill", "#fef2f2"),
+            "LeaseTerminated"     => ("exclamation-triangle-fill", "#fff7ed"),
+            "LeaseRenewed"        => ("arrow-clockwise", "#eff6ff"),
+            "PaymentRecorded"     => ("credit-card", "#f0fdf4"),
+            "PaymentOverdue"      => ("exclamation-diamond-fill", "#fef2f2"),
+            "MaintenanceSubmitted"=> ("tools", "#f0f9ff"),
+            "MaintenanceAssigned" => ("person-check", "#f5f3ff"),
+            "MaintenanceResolved" => ("check2-all", "#f0fdf4"),
+            _                     => ("bell", "#f8fafc")
+        };
+        var iconColor = n.Type switch {
+            "LeaseApproved"    or "PaymentRecorded"      or "MaintenanceResolved" => "#16a34a",
+            "LeaseRejected"    or "PaymentOverdue"                                 => "#dc2626",
+            "LeaseTerminated"                                                       => "#d97706",
+            "LeaseRenewed"     or "MaintenanceAssigned"                            => "#2563eb",
+            "MaintenanceSubmitted"                                                  => "#0284c7",
+            _                                                                       => "#64748b"
+        };
+        <div style="background:@bg;border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:12px">
+          <div style="color:@iconColor;font-size:1.1rem;margin-top:1px;flex-shrink:0">
+            <i class="bi bi-@icon"></i>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:.88rem;line-height:1.55">@n.Message</div>
+            <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">
+              @n.CreatedDate.ToString("dd MMM yyyy, HH:mm")
+            </div>
+          </div>
+          <form asp-action="Delete" asp-route-id="@n.NotificationId" method="post" style="flex-shrink:0">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-sm" style="background:transparent;border:none;color:var(--muted);padding:2px 6px" title="Dismiss">
+              <i class="bi bi-x"></i>
+            </button>
+          </form>
+        </div>
+      }
+    </div>
+  }
+</div>
