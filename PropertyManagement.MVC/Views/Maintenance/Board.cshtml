@@ -1,0 +1,417 @@
+@model object
+@{
+    ViewData["Title"] = "Live Board";
+    Layout = "_Layout";
+}
+
+<style>
+.board-wrap { padding: 2rem 0; }
+.board-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+@@media(max-width:768px){ .board-cols { grid-template-columns: 1fr; } }
+
+.col-wrap {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+}
+.col-head {
+    padding: .9rem 1.1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.col-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+.col-dot { width: 9px; height: 9px; border-radius: 50%; }
+.col-count {
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 20px;
+    min-width: 26px;
+    text-align: center;
+}
+.col-body {
+    flex: 1;
+    padding: .75rem;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    overflow-y: auto;
+}
+
+.mcard {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: .85rem 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    transition: box-shadow .15s, transform .15s;
+    animation: cardIn .25s ease;
+}
+.mcard:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-1px); }
+@@keyframes cardIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.mcard-ticket {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--brand);
+    margin-bottom: .3rem;
+}
+.mcard-cat {
+    font-size: .84rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: .25rem;
+}
+.mcard-staff {
+    font-size: .73rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: .35rem;
+}
+.mcard-time {
+    font-size: .7rem;
+    color: #cbd5e1;
+    margin-top: .25rem;
+}
+.pri-badge {
+    display: inline-block;
+    font-size: .65rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 99px;
+}
+
+.conn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: .74rem;
+    font-weight: 600;
+    background: var(--white);
+    border: 1px solid var(--border);
+    transition: background .3s, border-color .3s;
+}
+.conn-pill.is-connected    { background: #f0fdf4; border-color: #bbf7d0; }
+.conn-pill.is-reconnecting { background: #fff7ed; border-color: #fed7aa; }
+.conn-pill.is-disconnected { background: #fef2f2; border-color: #fecaca; }
+.conn-dot { width: 7px; height: 7px; border-radius: 50%; transition: background .3s; }
+
+.toast-wrap {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    z-index: 9999;
+    max-width: 320px;
+}
+.toast-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .7rem 1rem;
+    font-size: .82rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,.12);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    animation: toastIn .2s ease;
+}
+@@keyframes toastIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.toast-close {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: .85rem;
+    margin-left: auto; padding: 0; line-height: 1;
+}
+
+.col-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 2rem;
+    text-align: center;
+    color: #cbd5e1;
+}
+.col-empty i { font-size: 2rem; margin-bottom: .5rem; }
+.col-empty div { font-size: .78rem; }
+</style>
+
+<div class="page-wrap board-wrap">
+  <div class="ph" style="margin-bottom:1.25rem">
+    <div>
+      <div class="ph-title">Live Maintenance Board</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+        <li class="breadcrumb-item active">Live Board</li>
+      </ol>
+    </div>
+    <span class="conn-pill" id="connPill">
+      <span class="conn-dot" id="connDot" style="background:#94a3b8"></span>
+      <span id="connLabel">Connecting</span>
+    </span>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <div class="board-cols">
+
+    <div class="col-wrap">
+      <div class="col-head" style="background:#fffbeb">
+        <div class="col-title">
+          <span class="col-dot" style="background:#f59e0b"></span>
+          <span style="color:#92400e">Submitted</span>
+        </div>
+        <span class="col-count" style="background:#fef3c7;color:#92400e" id="cnt-Submitted">0</span>
+      </div>
+      <div class="col-body" id="col-Submitted">
+        <div class="col-empty" id="empty-Submitted">
+          <i class="bi bi-inbox"></i>
+          <div>No open requests</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-wrap">
+      <div class="col-head" style="background:#eff6ff">
+        <div class="col-title">
+          <span class="col-dot" style="background:#3b82f6"></span>
+          <span style="color:#1e40af">In Progress</span>
+        </div>
+        <span class="col-count" style="background:#dbeafe;color:#1e40af" id="cnt-Assigned">0</span>
+      </div>
+      <div class="col-body" id="col-Assigned">
+        <div class="col-empty" id="empty-Assigned">
+          <i class="bi bi-person-workspace"></i>
+          <div>No requests in progress</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-wrap">
+      <div class="col-head" style="background:#f0fdf4">
+        <div class="col-title">
+          <span class="col-dot" style="background:#10b981"></span>
+          <span style="color:#065f46">Resolved</span>
+        </div>
+        <span class="col-count" style="background:#d1fae5;color:#065f46" id="cnt-Resolved">0</span>
+      </div>
+      <div class="col-body" id="col-Resolved">
+        <div class="col-empty" id="empty-Resolved">
+          <i class="bi bi-check2-circle"></i>
+          <div>None resolved yet</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+@section Scripts {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+<script>
+
+// map a status string to the column element id it belongs in
+function colId(status) {
+    if (['Resolved', 'Closed'].includes(status))                    return 'col-Resolved';
+    if (['Assigned', 'InProgress', 'In Progress'].includes(status)) return 'col-Assigned';
+    return 'col-Submitted';
+}
+
+function adjustCount(colElementId, delta) {
+    const cntId = colElementId.replace('col-', 'cnt-');
+    const el = document.getElementById(cntId);
+    if (el) el.textContent = Math.max(0, parseInt(el.textContent || '0') + delta);
+}
+
+function syncEmpty(colElementId) {
+    const col = document.getElementById(colElementId);
+    const emp = document.getElementById(colElementId.replace('col-', 'empty-'));
+    if (!col || !emp) return;
+    emp.style.display = col.querySelectorAll('.mcard').length ? 'none' : '';
+}
+
+// build a coloured priority badge span
+function priBadge(priority) {
+    const styles = {
+        Urgent: 'background:#fee2e2;color:#dc2626',
+        High:   'background:#fef3c7;color:#d97706',
+        Medium: 'background:#dbeafe;color:#2563eb',
+        Low:    'background:#f1f5f9;color:#475569'
+    };
+    const s = styles[priority] || styles.Low;
+    return priority ? `<span class="pri-badge" style="${s}">${priority}</span>` : '';
+}
+
+// add a card to the correct column, silently skip if already present
+function addCard(status, ticket, category, priority, assignedStaff, time, requestId) {
+    const cId = colId(status);
+    const col  = document.getElementById(cId);
+    if (!col || document.getElementById('mcard-' + ticket)) return;
+
+    const card = document.createElement('div');
+    card.className = 'mcard';
+    card.id = 'mcard-' + ticket;
+    card.dataset.category  = category  || '';
+    card.dataset.priority  = priority  || '';
+    card.dataset.requestId = requestId || '';
+    if (requestId) {
+        card.style.cursor = 'pointer';
+        card.title = 'Click to view details';
+        card.addEventListener('click', function() {
+            window.location.href = '/Maintenance/Details/' + requestId;
+        });
+    }
+    card.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+            <div class="mcard-ticket">${ticket}</div>
+            ${priBadge(priority)}
+        </div>
+        <div class="mcard-cat">${category || ''}</div>
+        ${assignedStaff ? `<div class="mcard-staff"><i class="bi bi-person"></i>${assignedStaff}</div>` : ''}
+        <div class="mcard-time">${time || new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+        ${requestId ? `<div style="font-size:.65rem;color:var(--brand);margin-top:4px"><i class="bi bi-arrow-right-circle me-1"></i>View details</div>` : ''}`;
+    col.appendChild(card);
+    adjustCount(cId, +1);
+    syncEmpty(cId);
+}
+
+// remove a card from its current column and re-add it in the new column
+function moveCard(ticket, newStatus) {
+    const card = document.getElementById('mcard-' + ticket);
+    if (!card) return;
+    const oldColId  = card.parentElement?.id;
+    const requestId = card.dataset.requestId || '';
+    card.remove();
+    if (oldColId) { adjustCount(oldColId, -1); syncEmpty(oldColId); }
+    addCard(newStatus, ticket, card.dataset.category, card.dataset.priority, null, null, requestId || undefined);
+}
+
+// show a brief notification toast in the bottom-right corner
+function showToast(icon, msg, color) {
+    const id   = 'toast-' + Date.now();
+    const wrap = document.getElementById('toastWrap');
+    const el   = document.createElement('div');
+    el.className = 'toast-item';
+    el.id = id;
+    el.innerHTML = `<i class="bi bi-${icon}" style="color:${color};font-size:1rem;flex-shrink:0;margin-top:1px"></i><span>${msg}</span><button class="toast-close" onclick="document.getElementById('${id}').remove()">×</button>`;
+    wrap.insertBefore(el, wrap.firstChild);
+    setTimeout(() => {
+        const n = document.getElementById(id);
+        if (n) { n.style.opacity = '0'; n.style.transition = 'opacity .4s'; setTimeout(() => n.remove(), 400); }
+    }, 6000);
+}
+
+// fetch all currently open requests from the MVC endpoint and render them on first load
+// without this the board would appear empty until the next real-time push arrives
+async function loadExisting() {
+    try {
+        const res = await fetch('/Maintenance/OpenRequests');
+        if (!res.ok) return;
+        const list = await res.json();
+        list.forEach(r => addCard(r.status, r.ticketNumber, r.category, r.priority, r.assignedStaff, null, r.requestId));
+    } catch (e) {
+        console.warn('Could not load existing requests:', e);
+    }
+}
+
+// update the connection status pill appearance
+function setConn(state) {
+    const dot   = document.getElementById('connDot');
+    const label = document.getElementById('connLabel');
+    const pill  = document.getElementById('connPill');
+    const map = {
+        connected:    { color: '#10b981', text: 'Live',         cls: 'is-connected' },
+        reconnecting: { color: '#f59e0b', text: 'Reconnecting', cls: 'is-reconnecting' },
+        disconnected: { color: '#ef4444', text: 'Disconnected', cls: 'is-disconnected' },
+        connecting:   { color: '#94a3b8', text: 'Connecting',   cls: '' },
+    };
+    const s = map[state] || map.connecting;
+    dot.style.background = s.color;
+    label.textContent    = s.text;
+    pill.className       = 'conn-pill' + (s.cls ? ' ' + s.cls : '');
+}
+
+// build the hub connection
+// withAutomaticReconnect handles reconnection after a successful initial connection drops
+// the delays [0, 2000, 5000, 10000, 30000] are in milliseconds between retry attempts
+const conn = new signalR.HubConnectionBuilder()
+    .withUrl("/hubs/maintenance")
+    .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
+    .build();
+
+conn.onreconnecting(() => setConn('reconnecting'));
+conn.onreconnected(async () => {
+    setConn('connected');
+    await conn.invoke('JoinStaffBoard');
+    showToast('wifi', 'Reconnected. Board is live.', '#10b981');
+});
+conn.onclose(() => setConn('disconnected'));
+
+conn.on('NewRequestSubmitted', d => {
+    showToast('plus-circle', `New: <strong>${d.ticketNumber}</strong> · ${d.category} (${d.priority})`, '#6366f1');
+    addCard('Submitted', d.ticketNumber, d.category, d.priority, null, null, d.requestId);
+});
+conn.on('RequestStatusUpdated', d => {
+    showToast('arrow-repeat', `<strong>${d.ticketNumber}</strong> → ${d.newStatus}`, '#f59e0b');
+    moveCard(d.ticketNumber, d.newStatus);
+});
+conn.on('RequestAssigned', d => {
+    showToast('person-check', `<strong>${d.ticketNumber}</strong> assigned to ${d.assignedStaff}`, '#10b981');
+    moveCard(d.ticketNumber, 'Assigned');
+});
+
+// attempt to start the connection with a flat linear retry
+// we avoid recursive calls so there is exactly one active retry loop at any time
+// retryCount tracks how many consecutive failures we have had
+// after 2 failures we show Disconnected so the pill is honest about the state
+let retryCount = 0;
+
+async function startConnection() {
+    setConn('connecting');
+    try {
+        await conn.start();
+        retryCount = 0;
+        setConn('connected');
+        await conn.invoke('JoinStaffBoard');
+        await loadExisting();
+    } catch (e) {
+        retryCount++;
+        if (retryCount >= 2) {
+            setConn('disconnected');
+            showToast('wifi-off', 'Connection failed. Check that the service is running.', '#ef4444');
+        }
+        // schedule the next attempt using a capped backoff:
+        // 3s after the first fail, 8s after the second, 15s for all subsequent attempts
+        const delay = retryCount === 1 ? 3000 : retryCount === 2 ? 8000 : 15000;
+        setTimeout(startConnection, delay);
+    }
+}
+
+startConnection();
+</script>
+}
