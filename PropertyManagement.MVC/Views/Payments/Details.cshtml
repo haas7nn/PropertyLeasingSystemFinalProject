@@ -1,0 +1,104 @@
+@model PropertyManagement.MVC.Models.PaymentViewModel
+@{ ViewData["Title"] = "Payment Details"; }
+
+<div class="page-wrap" style="padding-top:2rem;max-width:700px">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Payment Details</div>
+      <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li><li class="breadcrumb-item"><a asp-action="Index">Payments</a></li><li class="breadcrumb-item active">#@Model.PaymentId</li></ol>
+    </div>
+    <a asp-action="Index" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+  </div>
+
+  @{
+    var sc = Model.Status switch {"Paid"=>"s-paid","Overdue"=>"s-overdue","Partial"=>"s-partial","Pending"=>"s-screening",_=>"s-pending"};
+  }
+
+  <div class="card p-4 mb-4">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem">Payment #@Model.PaymentId</div>
+        <div style="font-size:2rem;font-weight:800;letter-spacing:-.03em">BD @Model.AmountDue.ToString("N2")</div>
+        <div style="font-size:.84rem;color:var(--muted);margin-top:2px">Due @Model.DueDate.ToString("d MMMM yyyy")</div>
+      </div>
+      <span class="badge @sc" style="font-size:.85rem;padding:.45em 1em">@Model.Status</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+      <div>
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Tenant</div>
+        <div style="font-size:.9rem;font-weight:600">@Model.TenantEmail</div>
+      </div>
+      <div>
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Unit</div>
+        <div style="font-size:.9rem;font-weight:600">@Model.UnitNumber</div>
+      </div>
+      @if (Model.AmountPaid > 0)
+      {
+      <div>
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Amount Paid</div>
+        <div style="font-size:.9rem;font-weight:700;color:#059669">BD @Model.AmountPaid.ToString("N2")</div>
+      </div>
+      }
+      @if (Model.PaymentDate.HasValue)
+      {
+      <div>
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Paid On</div>
+        <div style="font-size:.9rem;font-weight:600">@Model.PaymentDate.Value.ToString("d MMM yyyy")</div>
+      </div>
+      }
+      @if (!string.IsNullOrEmpty(Model.PaymentMethod))
+      {
+      <div>
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Method</div>
+        <div style="font-size:.9rem;font-weight:600">@Model.PaymentMethod</div>
+      </div>
+      }
+      @if (!string.IsNullOrEmpty(Model.ReceiptNumber))
+      {
+      <div>
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.25rem">Receipt</div>
+        <div style="font-size:.9rem;font-weight:600;font-family:'JetBrains Mono',monospace">@Model.ReceiptNumber</div>
+      </div>
+      }
+    </div>
+  </div>
+
+  @if (User.IsInRole("PropertyManager") && Model.Status != "Paid")
+  {
+  <div class="card p-4">
+    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:1.25rem">Record Receipt</div>
+    <form asp-action="Record" method="post">
+      @Html.AntiForgeryToken()
+      <input type="hidden" name="PaymentId" value="@Model.PaymentId" />
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Amount Paid (BD) <span style="color:var(--red)">*</span></label>
+          <div style="position:relative">
+            <span style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.82rem;font-weight:600">BD</span>
+            <input type="number" name="AmountPaid" step="0.01" min="0.01" class="form-control" style="padding-left:2.5rem"
+                   value="@Model.AmountDue" required />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Payment Method <span style="color:var(--red)">*</span></label>
+          <select name="Method" class="form-select" required>
+            <option value="">Select</option>
+            <option>Cash</option>
+            <option>Bank Transfer</option>
+            <option>Cheque</option>
+            <option>Online</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Receipt Number <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input type="text" name="Receipt" class="form-control" placeholder="e.g. RCP-2026-001" />
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check2-circle"></i> Record Payment</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  }
+</div>
