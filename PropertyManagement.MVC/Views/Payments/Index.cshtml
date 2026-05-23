@@ -1,0 +1,99 @@
+@model IEnumerable<PropertyManagement.MVC.Models.PaymentViewModel>
+@{ ViewData["Title"] = "Payments"; }
+<style>
+.filter-pill { display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;text-decoration:none;transition:all .15s;background:var(--white);color:var(--muted);border:1px solid var(--border); }
+.filter-pill:hover { background:var(--surface);color:var(--text); }
+.filter-pill-active { background:var(--brand);color:white !important;border-color:var(--brand); }
+.row-overdue { background:#fff9f9; }
+.td-overdue  { color:var(--red);font-weight:600; }
+.td-normal   { color:var(--text2); }
+.td-paid     { color:#059669; }
+.td-muted    { color:var(--muted); }
+</style>
+
+<div class="page-wrap" style="padding-top:2rem">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Payments</div>
+      <ol class="breadcrumb"><li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li><li class="breadcrumb-item active">Payments</li></ol>
+    </div>
+    @if (User.IsInRole("PropertyManager"))
+    {
+      <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> New Payment</a>
+    }
+  </div>
+
+  <!-- Status filter pills — class= is safe for Razor expressions, style= is not on tag helpers -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem">
+    @foreach(var s in new[]{("","All"),("Pending","Pending"),("Overdue","Overdue"),("Paid","Paid"),("Partial","Partial")})
+    {
+      bool pillActive = (ViewBag.Status == s.Item1 || (ViewBag.Status == null && s.Item1 == ""));
+      string pillCss  = pillActive ? "filter-pill filter-pill-active" : "filter-pill";
+      string dotColor = s.Item1 switch { "Paid"=>"#059669","Overdue"=>"#dc2626","Partial"=>"#d97706","Pending"=>"#2563eb",_=>"#6366f1" };
+      <a asp-action="Index" asp-route-status="@s.Item1" class="@pillCss">
+        @if (!pillActive && s.Item1 != "") { <span style="width:6px;height:6px;border-radius:50%;background:@dotColor;display:inline-block"></span> }
+        @s.Item2
+      </a>
+    }
+  </div>
+
+  <div class="dtable">
+    <table>
+      <thead>
+        <tr>
+          <th>Tenant</th>
+          <th>Unit</th>
+          <th>Due Date</th>
+          <th>Amount Due</th>
+          <th>Amount Paid</th>
+          <th>Method</th>
+          <th>Status</th>
+          <th style="text-align:right;padding-right:1.4rem">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!Model.Any())
+        {
+          <tr><td colspan="8">
+            <div class="empty-state">
+              <i class="bi bi-credit-card empty-icon"></i>
+              <div class="empty-title">No payments found</div>
+              <div class="empty-sub">
+                @(User.IsInRole("PropertyManager") ? "Create a payment record for an active lease." : "No payment records found for your account.")
+              </div>
+            </div>
+          </td></tr>
+        }
+        @foreach (var p in Model)
+        {
+          var sc = p.Status switch {"Paid"=>"s-paid","Overdue"=>"s-overdue","Partial"=>"s-partial","Pending"=>"s-screening",_=>"s-pending"};
+          bool isOverdue = p.Status == "Overdue";
+          string rowCss  = isOverdue ? "row-overdue" : "";
+          string dueCss  = isOverdue ? "td-overdue"  : "td-normal";
+          string paidCss = p.AmountPaid > 0 ? "td-paid" : "td-muted";
+          <tr class="@rowCss">
+            <td>
+              <div style="font-size:.875rem;font-weight:500;color:var(--text)">@p.TenantEmail</div>
+            </td>
+            <td style="font-size:.84rem;color:var(--text2)">@p.UnitNumber</td>
+            <td class="@dueCss" style="font-size:.84rem">
+              @p.DueDate.ToString("d MMM yyyy")
+              @if (isOverdue) { <span style="font-size:.7rem;display:block;color:var(--red)">overdue</span> }
+            </td>
+            <td style="font-size:.875rem;font-weight:500;color:var(--text)">BD @p.AmountDue.ToString("N2")</td>
+            <td class="@paidCss" style="font-size:.875rem">
+              @(p.AmountPaid > 0 ? "BD " + p.AmountPaid.ToString("N2") : "")
+            </td>
+            <td style="font-size:.8rem;color:var(--muted)">@(p.PaymentMethod ?? "")</td>
+            <td><span class="badge @sc">@p.Status</span></td>
+            <td>
+              <div class="tbl-actions">
+                <a asp-action="Details" asp-route-id="@p.PaymentId" class="tbl-link tbl-link-view"><i class="bi bi-eye"></i> View</a>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
