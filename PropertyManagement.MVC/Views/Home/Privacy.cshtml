@@ -1,0 +1,62 @@
+@{ ViewData["Title"] = "Privacy Policy"; }
+
+<div class="page-wrap" style="padding-top:2rem;padding-bottom:3rem;max-width:820px">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Privacy Policy</div>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        <li class="breadcrumb-item active">Privacy</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card p-0" style="overflow:hidden">
+    <div style="background:var(--navy);padding:2rem 2.25rem;display:flex;align-items:center;gap:1rem">
+      <div style="width:52px;height:52px;background:rgba(99,102,241,.35);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#fff;flex-shrink:0">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div>
+        <div style="color:#fff;font-size:1.15rem;font-weight:700">Privacy Policy</div>
+        <div style="color:rgba(255,255,255,.45);font-size:.82rem">Your trust and privacy are our top priorities</div>
+      </div>
+    </div>
+
+    <div style="padding:2rem 2.25rem;line-height:1.8;color:var(--text2)">
+      <p style="font-size:.95rem;color:var(--muted);margin-bottom:2rem">
+        This Privacy Policy describes how PropManager collects, uses, and protects your information when you use the Property Management System.
+      </p>
+
+      <div style="margin-bottom:1.75rem">
+        <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.6rem">
+          <i class="bi bi-info-circle" style="color:var(--brand)"></i> Information We Collect
+        </div>
+        <p style="font-size:.875rem;margin:0">
+          When you use our maintenance tracking service, we collect your ticket number and phone number to verify your identity and provide real-time updates on your request status. For registered users, we also store your email address, CPR number, occupation, and emergency contact for lease administration purposes.
+        </p>
+      </div>
+
+      <div style="margin-bottom:1.75rem">
+        <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.6rem">
+          <i class="bi bi-lock" style="color:var(--brand)"></i> How We Protect Your Data
+        </div>
+        <p style="font-size:.875rem;margin:0">
+          All passwords are hashed using PBKDF2 with HMAC-SHA256 via ASP.NET Core Identity. Communication is encrypted over HTTPS. We do not sell or share your personal information with third parties.
+        </p>
+      </div>
+
+      <div style="margin-bottom:1.75rem">
+        <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.6rem">
+          <i class="bi bi-gear" style="color:var(--brand)"></i> Your Rights
+        </div>
+        <p style="font-size:.875rem;margin:0">
+          You have the right to access the data we hold about your lease and maintenance requests at any time. If you believe any information is incorrect, contact your property manager to have it updated.
+        </p>
+      </div>
+
+      <div style="padding-top:1.5rem;border-top:1px solid var(--border);font-size:.77rem;color:var(--muted)">
+        Last updated: @DateTime.Now.ToString("MMMM dd, yyyy")
+      </div>
+    </div>
+  </div>
+</div>

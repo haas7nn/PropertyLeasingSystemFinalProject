@@ -1,0 +1,204 @@
+@model PropertyManagement.MVC.Models.DashboardSummaryViewModel
+@{ ViewData["Title"] = "Dashboard"; }
+
+@if (User.Identity?.IsAuthenticated != true)
+{
+<!-- ── Hero ─────────────────────────────────────────────────────── -->
+<div style="background:#111827;padding:4rem 0 3.5rem">
+  <div class="page-wrap">
+    <div class="row align-items-center g-5">
+
+      <div class="col-lg-6">
+        <h1 style="font-size:2rem;font-weight:700;color:#fff;line-height:1.25;margin-bottom:1rem">
+          Property Management System
+        </h1>
+        <p style="font-size:.93rem;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:2rem;max-width:420px">
+          Manage buildings, leases, maintenance requests, and payments in one centralised platform.
+        </p>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <a asp-controller="Account" asp-action="Login"
+             style="display:inline-flex;align-items:center;gap:7px;background:#fff;color:#111827;padding:.6rem 1.35rem;border-radius:8px;font-weight:600;font-size:.875rem;text-decoration:none">
+            <i class="bi bi-box-arrow-in-right"></i> Sign in
+          </a>
+          <a asp-controller="Account" asp-action="Register"
+             style="display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);padding:.6rem 1.2rem;border-radius:8px;font-weight:500;font-size:.875rem;text-decoration:none">
+            Register as tenant
+          </a>
+          <a asp-controller="PublicLookup" asp-action="Index"
+             style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.35);font-size:.82rem;text-decoration:none;padding:.6rem .5rem">
+            <i class="bi bi-search"></i> Track a ticket
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 d-none d-lg-flex justify-content-end">
+        <div style="width:100%;max-width:380px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:8px">
+            <i class="bi bi-buildings" style="color:rgba(255,255,255,.4);font-size:.85rem"></i>
+            <span style="font-size:.8rem;font-weight:500;color:rgba(255,255,255,.5)">Portfolio overview</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr">
+            @{
+              var heroItems = new[]{
+                new{icon="bi-building",    val=Model.TotalBuildings.ToString(), label="Buildings"},
+                new{icon="bi-bar-chart-line",val=Model.OccupancyRate+"%",       label="Occupancy rate"},
+                new{icon="bi-door-open",   val=Model.AvailableUnits.ToString(), label="Available units"},
+                new{icon="bi-grid-3x3-gap",val=Model.TotalUnits.ToString(),     label="Total units"},
+              };
+            }
+            @for(int i = 0; i < heroItems.Length; i++){
+              var it = heroItems[i];
+              var bR = i % 2 == 0 ? "border-right:1px solid rgba(255,255,255,.08);" : "";
+              var bB = i < 2      ? "border-bottom:1px solid rgba(255,255,255,.08);" : "";
+              <div style="padding:20px 18px;@bR@bB">
+                <i class="bi @it.icon" style="color:rgba(255,255,255,.3);font-size:.85rem;display:block;margin-bottom:.5rem"></i>
+                <div style="font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-.03em;line-height:1">@it.val</div>
+                <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-top:4px;text-transform:uppercase;letter-spacing:.04em">@it.label</div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Features ──────────────────────────────────────────────────── -->
+<div style="background:#fff;border-bottom:1px solid #e5e7eb">
+  <div class="page-wrap" style="padding:3rem 1.5rem">
+    <div class="row g-0">
+      @foreach(var f in new[]{
+        new{icon="bi-building",          title="Buildings & units",   desc="Manage multiple properties. Configure unit types, amenities, pricing, and availability."},
+        new{icon="bi-file-earmark-text", title="Lease management",    desc="Full workflow from application through screening, approval, renewal, and termination."},
+        new{icon="bi-tools",             title="Maintenance",         desc="Tenants submit requests, staff track progress on a live board. Public ticket lookup included."},
+        new{icon="bi-credit-card",       title="Rent and payments",   desc="Record payments, handle partial receipts, auto-flag overdue balances per lease."},
+        new{icon="bi-bell",              title="Notifications",       desc="In-system alerts for lease updates, payment receipts, and maintenance progress."},
+        new{icon="bi-bar-chart",         title="Reports",             desc="Occupancy, maintenance backlog, and payment collection in a separate reporting dashboard."},
+      })
+      {
+      <div class="col-sm-6 col-lg-4" style="padding:1.5rem 1.5rem;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.6rem">
+          <div style="width:32px;height:32px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="bi @f.icon" style="font-size:.85rem;color:#374151"></i>
+          </div>
+          <span style="font-size:.875rem;font-weight:600;color:#111827">@f.title</span>
+        </div>
+        <p style="font-size:.8rem;color:#6b7280;line-height:1.65;margin:0">@f.desc</p>
+      </div>
+      }
+    </div>
+  </div>
+</div>
+}
+else
+{
+<!-- ── Dashboard ─────────────────────────────────────────────────── -->
+<div class="page-wrap" style="padding-top:2.25rem;padding-bottom:3rem">
+
+  <div class="ph" style="margin-bottom:2rem">
+    <div>
+      <div class="ph-title">Overview</div>
+      <div class="ph-sub">@User.Identity?.Name &nbsp;·&nbsp; @DateTime.Now.ToString("d MMMM yyyy")</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      @if (User.IsInRole("PropertyManager"))
+      {
+        <a asp-controller="Leases"   asp-action="Create"  class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> New lease</a>
+        <a asp-controller="Payments" asp-action="Create"  class="btn btn-secondary btn-sm">New payment</a>
+      }
+      @if (User.IsInRole("Tenant"))
+      {
+        <a asp-controller="Maintenance" asp-action="Create" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> Submit request</a>
+        <a asp-controller="Leases"      asp-action="Browse" class="btn btn-secondary btn-sm">Browse units</a>
+      }
+      @if (User.IsInRole("MaintenanceStaff"))
+      {
+        <a asp-controller="Maintenance" asp-action="Board" class="btn btn-primary btn-sm">Open live board</a>
+      }
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="row g-3 mb-0">
+    <div class="col-6 col-sm-3">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="bi bi-building"></i></div>
+        <div><div class="kpi-num">@Model.TotalBuildings</div><div class="kpi-label">Buildings</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="bi bi-bar-chart-line"></i></div>
+        <div><div class="kpi-num">@Model.OccupancyRate<span style="font-size:.9rem;font-weight:500">%</span></div><div class="kpi-label">Occupancy</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="bi bi-file-earmark-text"></i></div>
+        <div><div class="kpi-num">@Model.ActiveLeases</div><div class="kpi-label">Active leases</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="bi bi-door-open"></i></div>
+        <div><div class="kpi-num">@Model.AvailableUnits</div><div class="kpi-label">Available units</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="bi bi-hourglass-split"></i></div>
+        <div><div class="kpi-num" style="@(Model.PendingApplications > 0 ? "color:var(--amber)" : "")">@Model.PendingApplications</div><div class="kpi-label">Pending apps</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="bi bi-tools"></i></div>
+        <div><div class="kpi-num" style="@(Model.OpenMaintenanceRequests > 0 ? "color:var(--amber)" : "")">@Model.OpenMaintenanceRequests</div><div class="kpi-label">Open tickets</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="bi bi-exclamation-circle"></i></div>
+        <div><div class="kpi-num" style="@(Model.OverduePayments > 0 ? "color:var(--red)" : "")">@Model.OverduePayments</div><div class="kpi-label">Overdue</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-3">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+        <div><div class="kpi-num">@Model.TotalUnits</div><div class="kpi-label">Total units</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick access -->
+  <div style="border-top:1px solid var(--border);margin-top:2rem;padding-top:1.5rem">
+    <p style="font-size:.75rem;color:var(--muted);font-weight:500;margin-bottom:.9rem">Quick access</p>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      @if (User.IsInRole("PropertyManager"))
+      {
+        <a asp-controller="Leases"      asp-action="Index"  class="btn btn-secondary btn-sm">All leases</a>
+        <a asp-controller="Payments"    asp-action="Index" asp-route-status="Overdue" class="btn btn-secondary btn-sm" style="color:var(--red)">Overdue payments</a>
+        <a asp-controller="Maintenance" asp-action="Board"  class="btn btn-secondary btn-sm">Maintenance board</a>
+        <a asp-controller="Buildings"   asp-action="Index"  class="btn btn-secondary btn-sm">Buildings</a>
+        <a asp-controller="Units"       asp-action="Index"  class="btn btn-secondary btn-sm">Units</a>
+        <a asp-controller="Staff"       asp-action="Index"  class="btn btn-secondary btn-sm">Staff</a>
+      }
+      @if (User.IsInRole("Tenant"))
+      {
+        <a asp-controller="Leases"      asp-action="Index"  class="btn btn-secondary btn-sm">My lease</a>
+        <a asp-controller="Maintenance" asp-action="Index"  class="btn btn-secondary btn-sm">My requests</a>
+        <a asp-controller="Payments"    asp-action="Index"  class="btn btn-secondary btn-sm">Payments</a>
+        <a asp-controller="Leases"      asp-action="Browse" class="btn btn-secondary btn-sm">Browse available units</a>
+      }
+      @if (User.IsInRole("MaintenanceStaff"))
+      {
+        <a asp-controller="Maintenance" asp-action="Board"  class="btn btn-secondary btn-sm">Live board</a>
+        <a asp-controller="Maintenance" asp-action="Index"  class="btn btn-secondary btn-sm">All requests</a>
+      }
+      <a asp-controller="PublicLookup" asp-action="Index" class="btn btn-secondary btn-sm">Track a ticket</a>
+    </div>
+  </div>
+
+</div>
+}
