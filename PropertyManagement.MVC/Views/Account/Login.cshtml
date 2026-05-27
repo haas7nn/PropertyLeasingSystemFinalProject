@@ -1,0 +1,59 @@
+@model PropertyManagement.MVC.Models.LoginViewModel
+@{ ViewData["Title"] = "Sign in"; Layout = "_Layout"; }
+
+<div style="min-height:calc(100vh - 61px);display:flex;align-items:center;justify-content:center;padding:3rem 1rem;background:var(--surface)">
+  <div style="width:100%;max-width:380px">
+
+    <div style="margin-bottom:2rem">
+      <div style="font-size:1.1rem;font-weight:600;color:var(--text);margin-bottom:.3rem">Sign in to your account</div>
+      <div style="font-size:.84rem;color:var(--muted)">Property Management System</div>
+    </div>
+
+    <div class="form-card" style="padding:1.75rem">
+      @if (!ViewData.ModelState.IsValid)
+      {
+        <div class="alert alert-danger mb-4">
+          <i class="bi bi-exclamation-circle"></i>
+          <span asp-validation-summary="All"></span>
+        </div>
+      }
+
+      <form asp-action="Login" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+        <div class="mb-3">
+          <label asp-for="Email" class="form-label">Email</label>
+          <input asp-for="Email" class="form-control" type="email" placeholder="you@example.com" autocomplete="email" autofocus />
+          <span asp-validation-for="Email" class="text-danger" style="font-size:.76rem"></span>
+        </div>
+
+        <div class="mb-4">
+          <label asp-for="Password" class="form-label">Password</label>
+          <input asp-for="Password" class="form-control" type="password" placeholder="••••••••" autocomplete="current-password" />
+          <span asp-validation-for="Password" class="text-danger" style="font-size:.76rem"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" style="justify-content:center;padding:.65rem">
+          Sign in
+        </button>
+      </form>
+
+      <div style="text-align:center;margin-top:1.25rem;font-size:.83rem;color:var(--muted)">
+        Don't have an account? <a asp-action="Register" style="color:var(--brand);font-weight:500;text-decoration:none">Register</a>
+      </div>
+    </div>
+
+    <div style="margin-top:1.25rem;padding:1rem 1.25rem;background:var(--white);border:1px solid var(--border);border-radius:10px;font-size:.77rem;color:var(--muted)">
+      <div style="font-weight:500;color:var(--text2);margin-bottom:.6rem">Demo accounts</div>
+      <div style="display:flex;flex-direction:column;gap:.35rem">
+        <div><span style="display:inline-block;width:80px;font-weight:500;color:var(--text2)">Manager</span>manager@property.com / Manager@123</div>
+        <div><span style="display:inline-block;width:80px;font-weight:500;color:var(--text2)">Tenant</span>ali@tenant.com / Tenant@123</div>
+        <div><span style="display:inline-block;width:80px;font-weight:500;color:var(--text2)">Staff</span>ahmed@staff.com / Staff@123</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }
