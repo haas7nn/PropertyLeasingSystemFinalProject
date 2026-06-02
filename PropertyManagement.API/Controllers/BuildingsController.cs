@@ -54,7 +54,7 @@ namespace PropertyManagement.API.Controllers
             }
         }
 
-        // GET api/Buildings/5 - returns a single building by its ID
+        // returns a single building by its ID
         [HttpGet("{id}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -90,7 +90,7 @@ namespace PropertyManagement.API.Controllers
             }
         }
 
-        // POST api/Buildings - creates a new building record
+        // creates a new building record
         [HttpPost]
         [Authorize(Roles = "PropertyManager")]
         public async Task<IActionResult> Create([FromBody] CreateBuildingDto dto)
@@ -130,7 +130,7 @@ namespace PropertyManagement.API.Controllers
             }
         }
 
-        // PUT api/Buildings/5 - updates an existing building
+        //updates an existing building
         [HttpPut("{id}")]
         [Authorize(Roles = "PropertyManager")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateBuildingDto dto)
@@ -159,7 +159,7 @@ namespace PropertyManagement.API.Controllers
             }
         }
 
-        // DELETE api/Buildings/5 - blocked if the building still has units attached
+        //blocked if the building still has units attached
         // the manager must remove all units from the building first
         [HttpDelete("{id}")]
         [Authorize(Roles = "PropertyManager")]

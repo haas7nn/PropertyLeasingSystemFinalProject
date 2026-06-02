@@ -53,10 +53,11 @@
                   <div style="font-size:.88rem;font-weight:600;margin-top:2px">@(u.SizeInSqFt > 0 ? $"{u.SizeInSqFt} sqft" : "")</div>
                 </div>
               </div>
-              @if (!string.IsNullOrEmpty(u.Amenities))
+              @{ var amenityList = AmenitiesFormatter.Parse(u.Amenities); }
+              @if (amenityList.Count > 0)
               {
-                <div style="font-size:.75rem;color:var(--muted);margin-bottom:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="@u.Amenities">
-                  <i class="bi bi-stars me-1"></i>@u.Amenities
+                <div style="font-size:.75rem;color:var(--muted);margin-bottom:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="@string.Join(", ", amenityList)">
+                  <i class="bi bi-stars me-1"></i>@string.Join(" · ", amenityList)
                 </div>
               }
               <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:.85rem;margin-top:.25rem">

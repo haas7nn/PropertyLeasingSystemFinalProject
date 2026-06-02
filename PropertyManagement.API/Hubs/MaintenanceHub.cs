@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace PropertyManagement.API.Hubs
 {
-    // SignalR hub that powers the real-time maintenance board
+    // SignalR hub that powers the real time maintenance board
     // clients join the StaffBoard group on page load and receive live push events
 
     public class MaintenanceHub : Hub

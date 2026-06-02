@@ -22,7 +22,6 @@ namespace PropertyManagement.API.Controllers
             _notificationService = notificationService;
         }
 
-        // GET api/Leases - returns all leases optionally filtered by status
         // results include unit and building name for display context
         // tenants only see their own leases enforced by the query
         [HttpGet]
@@ -61,7 +60,6 @@ namespace PropertyManagement.API.Controllers
             return Ok(leases);
         }
 
-        // GET api/Leases/5 - returns a single lease with its payments
         // returns 403 Forbidden if a tenant tries to view another tenants lease
         [HttpGet("{id}")]
         [Authorize]
@@ -100,7 +98,6 @@ namespace PropertyManagement.API.Controllers
             });
         }
 
-        // POST api/Leases - creates a new lease application
         // validates that the target unit is Available before creating
         // also blocks duplicate open applications on the same unit
         [HttpPost]
@@ -142,7 +139,6 @@ namespace PropertyManagement.API.Controllers
                 new { leaseId = lease.LeaseId, status = lease.Status });
         }
 
-        // PUT api/Leases/5 - updates mutable fields on an existing lease
         // for status changes use the dedicated lifecycle endpoints below
         [HttpPut("{id}")]
         [Authorize(Roles = "PropertyManager")]
@@ -163,7 +159,6 @@ namespace PropertyManagement.API.Controllers
             return Ok(new { message = "Lease updated.", leaseId = lease.LeaseId });
         }
 
-        // PUT api/Leases/5/screen - moves a lease from Application to Screening
         // optional screening notes such as CPR check results can be recorded here
         [HttpPut("{id}/screen")]
         [Authorize(Roles = "PropertyManager")]
@@ -183,7 +178,7 @@ namespace PropertyManagement.API.Controllers
             return Ok(new { message = "Lease moved to Screening.", leaseId = lease.LeaseId });
         }
 
-        // PUT api/Leases/5/approve - approves a lease from Application or Screening to Active
+        //  approves a lease from Application or Screening to Active
         // also sets the unit status to Occupied and links CurrentLeaseId
         [HttpPut("{id}/approve")]
         [Authorize(Roles = "PropertyManager")]
@@ -211,7 +206,7 @@ namespace PropertyManagement.API.Controllers
             return Ok(new { message = "Lease approved successfully.", leaseId = lease.LeaseId });
         }
 
-        // PUT api/Leases/5/reject - rejects a lease in Application or Screening
+        //  rejects a lease in Application or Screening
         // the unit remains Available because it was never set to Occupied for this lease
         [HttpPut("{id}/reject")]
         [Authorize(Roles = "PropertyManager")]
@@ -238,7 +233,7 @@ namespace PropertyManagement.API.Controllers
             return Ok(new { message = "Lease rejected.", leaseId = lease.LeaseId });
         }
 
-        // PUT api/Leases/5/terminate - terminates an Active lease
+        // terminates an Active lease
         // also resets the unit back to Available and clears CurrentLeaseId
         [HttpPut("{id}/terminate")]
         [Authorize(Roles = "PropertyManager")]
@@ -266,7 +261,7 @@ namespace PropertyManagement.API.Controllers
             return Ok(new { message = "Lease terminated.", leaseId = lease.LeaseId });
         }
 
-        // DELETE api/Leases/5 - permanently removes a lease record
+        // permanently removes a lease record
         // active leases cannot be deleted use the Terminate action instead
         [HttpDelete("{id}")]
         [Authorize(Roles = "PropertyManager")]

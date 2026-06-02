@@ -11,14 +11,17 @@
 </div>
 <div class="card p-0" style="overflow:hidden">
   <table class="table table-hover mb-0">
-    <thead style="background:var(--navy)">
+    @{
+      var thStyle = "background:#0a0f1e;color:rgba(255,255,255,.75);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none";
+    }
+    <thead>
       <tr>
-        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1.25rem;border:none">Building</th>
-        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Location</th>
-        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Total</th>
-        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Occupied</th>
-        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Available</th>
-        <th style="color:rgba(255,255,255,.6);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.75rem 1rem;border:none">Rate</th>
+        <th style="@thStyle;padding-left:1.25rem">Building</th>
+        <th style="@thStyle">Location</th>
+        <th style="@thStyle">Total</th>
+        <th style="@thStyle">Occupied</th>
+        <th style="@thStyle">Available</th>
+        <th style="@thStyle">Rate</th>
       </tr>
     </thead>
     <tbody>

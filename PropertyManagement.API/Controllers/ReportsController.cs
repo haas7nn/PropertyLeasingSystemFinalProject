@@ -20,7 +20,7 @@ namespace PropertyManagement.API.Controllers
             _context = context;
         }
 
-        // GET api/Reports/occupancy - returns a system-wide and per-building occupancy breakdown
+        // returns a system-wide and per-building occupancy breakdown
         [HttpGet("occupancy")]
         public async Task<IActionResult> GetOccupancyReport()
         {
@@ -57,7 +57,7 @@ namespace PropertyManagement.API.Controllers
             });
         }
 
-        // GET api/Reports/maintenance-stats - returns request counts grouped by status category and priority
+        //  returns request counts grouped by status category and priority
         [HttpGet("maintenance-stats")]
         public async Task<IActionResult> GetMaintenanceStats()
         {
@@ -108,7 +108,7 @@ namespace PropertyManagement.API.Controllers
             });
         }
 
-        // GET api/Reports/payment-summary - returns totals for paid pending and overdue amounts
+        // returns totals for paid pending and overdue amounts
         [HttpGet("payment-summary")]
         public async Task<IActionResult> GetPaymentSummary()
         {

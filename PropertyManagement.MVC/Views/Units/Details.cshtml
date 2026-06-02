@@ -66,11 +66,17 @@
           </div>
         </div>
       </div>
-      @if (!string.IsNullOrEmpty(Model.Amenities))
+      @{ var amenityList = AmenitiesFormatter.Parse(Model.Amenities); }
+      @if (amenityList.Count > 0)
       {
         <div style="margin-top:1rem;padding:1rem;background:var(--surface);border-radius:10px;border:1px solid var(--border)">
-          <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:.4rem">Amenities</div>
-          <div style="font-size:.88rem">@Model.Amenities</div>
+          <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:.6rem">Amenities</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            @foreach (var a in amenityList)
+            {
+              <span style="display:inline-block;background:var(--brand-bg);color:var(--brand);font-size:.74rem;font-weight:600;padding:3px 10px;border-radius:99px">@a</span>
+            }
+          </div>
         </div>
       }
     </div>

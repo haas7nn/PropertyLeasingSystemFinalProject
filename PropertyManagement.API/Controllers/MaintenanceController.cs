@@ -229,7 +229,7 @@ namespace PropertyManagement.API.Controllers
             if (dto.Status == "Resolved")
                 await _notificationService.MaintenanceResolvedAsync(request.TenantId, request.TicketNumber);
 
-            // Real-time: update the live staff board card
+            // Real time: update the live staff board card
             await _hubContext.Clients.Group("StaffBoard").SendAsync("RequestStatusUpdated", new
             {
                 requestId    = request.RequestId,
@@ -275,7 +275,7 @@ namespace PropertyManagement.API.Controllers
                                  ?? new List<string>();
                     skillMatched = skills.Contains(request.Category, StringComparer.OrdinalIgnoreCase);
                 }
-                catch { /* Skills JSON malformed — ignore and allow assignment */ }
+                catch { /* Skills JSON malformed ignore and allow assignment */ }
             }
 
             request.AssignedStaffId = dto.StaffId;

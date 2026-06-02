@@ -7,7 +7,7 @@ namespace PropertyManagement.API.Models
 
     public class Tenant : IdentityUser
     {
-        // Bahrain national ID number used during lease screening
+        // Bahrain CPR number used during lease screening
         [MaxLength(20)]
         public string? CPR { get; set; }
 

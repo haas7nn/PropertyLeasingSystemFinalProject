@@ -23,7 +23,7 @@ namespace PropertyManagement.API.Controllers
             _context = context;
         }
 
-        // GET api/Notifications - returns all notifications for the current user newest first
+        // returns all notifications for the current user newest first
         [HttpGet]
         public async Task<IActionResult> GetMyNotifications()
         {
@@ -46,7 +46,7 @@ namespace PropertyManagement.API.Controllers
             return Ok(notifications);
         }
 
-        // GET api/Notifications/unread-count - returns just the unread count for the navbar badge
+        //  returns just the unread count for the navbar badge
         [HttpGet("unread-count")]
         public async Task<IActionResult> GetUnreadCount()
         {
@@ -59,7 +59,7 @@ namespace PropertyManagement.API.Controllers
             return Ok(new { unreadCount = count });
         }
 
-        // PUT api/Notifications/5/read - marks a single notification as read
+        //  marks a single notification as read
         // only the owner of the notification is allowed to do this
         [HttpPut("{id}/read")]
         public async Task<IActionResult> MarkAsRead(int id)
@@ -79,7 +79,7 @@ namespace PropertyManagement.API.Controllers
             return Ok(new { message = "Notification marked as read" });
         }
 
-        // PUT api/Notifications/mark-all-read - marks all unread notifications as read in one call
+        //  marks all unread notifications as read in one call
         [HttpPut("mark-all-read")]
         public async Task<IActionResult> MarkAllAsRead()
         {
@@ -96,7 +96,7 @@ namespace PropertyManagement.API.Controllers
             return Ok(new { message = $"{unread.Count} notifications marked as read" });
         }
 
-        // DELETE api/Notifications/5 - permanently removes a notification
+        // permanently removes a notification
         // only the owner of the notification is allowed to delete it
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
