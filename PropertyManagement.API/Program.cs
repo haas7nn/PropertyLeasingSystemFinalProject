@@ -184,6 +184,34 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// Global exception handler: catches any unhandled exception from a controller
+// and returns a clean JSON error instead of leaking the full stack trace.
+// Developer exception page stays on in Development for easier local debugging.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json";
+            var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+            var feature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+            if (feature?.Error is not null)
+                logger.LogError(feature.Error, "Unhandled exception on {Path}", context.Request.Path);
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = "An unexpected error occurred. The incident has been logged.",
+                traceId = context.TraceIdentifier
+            });
+        });
+    });
+}
+
 // Swagger: enabled in all environments so the marker can browse and test API endpoints
 // on the deployed Azure instance without needing a local environment.
 // The JWT "Authorize" button in Swagger UI is required to test secured endpoints.
