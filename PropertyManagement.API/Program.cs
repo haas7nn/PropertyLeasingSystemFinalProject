@@ -132,8 +132,8 @@ builder.Services.AddCors(options =>
         // Production: strict allow-list only our known Azure App Service URLs
         var allowedOrigins = new[]
         {
-            "https://propertymgmt-mvc.azurewebsites.net",
-            "https://propertymgmt-reporting.azurewebsites.net",
+            "https://propertymgmt-mvc-s7g1.azurewebsites.net",
+            "https://propertymgmt-reporting-s7g1.azurewebsites.net",
         };
 
         options.AddPolicy("AllowAll", policy =>

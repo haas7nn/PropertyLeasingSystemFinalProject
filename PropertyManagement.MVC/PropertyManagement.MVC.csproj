@@ -10,4 +10,36 @@
     <!-- SignalR client for live maintenance board -->
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
   </ItemGroup>
+
+  <!--
+    Strip the API project's appsettings*.json from MVC's build and publish output.
+    Because we reference the API project (Web SDK) for its shared DbContext,
+    its appsettings files come along as transitive content and collide with
+    our own at publish time.
+
+    We hit BOTH item lists at multiple stages because Visual Studio's
+    MSDeploy publish runs a different pipeline than `dotnet publish` CLI,
+    and the duplicate check fires at varying points depending on the path.
+  -->
+  <Target Name="RemoveTransitiveAppSettingsFromCopy"
+          AfterTargets="GetCopyToOutputDirectoryItems;_GetCopyToOutputDirectoryItemsFromTransitiveProjectReferences"
+          BeforeTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <_AllChildProjectItemsWithTargetPath Remove="@(_AllChildProjectItemsWithTargetPath)"
+        Condition="$([System.String]::new('%(Filename)').StartsWith('appsettings'))" />
+      <AllItemsFullPathWithTargetPath Remove="@(AllItemsFullPathWithTargetPath)"
+        Condition="$([System.String]::new('%(Filename)').StartsWith('appsettings'))
+                   AND !$([System.String]::new('%(FullPath)').StartsWith('$(MSBuildProjectDirectory)'))" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="RemoveTransitiveAppSettingsFromPublish"
+          AfterTargets="ComputeFilesToPublish"
+          BeforeTargets="_CheckForDuplicatePublishOutputFiles">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+        Condition="$([System.String]::new('%(ResolvedFileToPublish.Filename)').StartsWith('appsettings'))
+                   AND !$([System.String]::new('%(ResolvedFileToPublish.FullPath)').StartsWith('$(MSBuildProjectDirectory)'))" />
+    </ItemGroup>
+  </Target>
 </Project>
